@@ -24,6 +24,7 @@
 #include "simple_shader.hpp"
 #include "opengl.hpp"
 #include "geometry.hpp"
+#include "geometryMain.hpp"
 
 using namespace std;
 using namespace cgra;
@@ -32,15 +33,12 @@ using namespace cgra;
 //
 GLFWwindow* g_window;
 
-//Geometry loader and drawer
-//
-Geometry *g_geometry = nullptr;
 
 // Projection values
 // 
-float g_fovy = 20.0f;
-float g_znear = 0.1f;
-float g_zfar = 1000.0f;
+float g_fovy = 20.0;
+float g_znear = 0.1;
+float g_zfar = 1000.0;
 
 
 // Mouse controlled Camera values
@@ -56,9 +54,10 @@ float g_zoom = 1.0;
 //
 bool g_useShader = false;
 GLuint g_texture = 0;
-GLuint g_texture1 = 0;
 GLuint g_shader = 0;
 
+//Loads and Renders objects with multi layering textures
+GeometryMain *g_geometryMain = nullptr;
 
 // Mouse Button callback
 // Called for mouse movement event on since the last glfwPollEvents
@@ -126,99 +125,17 @@ void charCallback(GLFWwindow *win, unsigned int c) {
 // Called once on start up
 // 
 void initLight() {
-	//ambient light
-	float position[] = { 0.0f, 0.0f, 1.0f, 0.0f };
+	float direction[] = { 0.0f, 0.0f, 1.0f, 0.0f };
 	float diffintensity[] = { 0.7f, 0.7f, 0.7f, 1.0f };
-	float ambient[] = { 0.2f, 0.2f, 0.2f, 0.2f };
+	float ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
-	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	glLightfv(GL_LIGHT0, GL_POSITION, direction);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffintensity);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
 
+
 	glEnable(GL_LIGHT0);
-
-	//spotlight
-	float spotPos[] = { 0.0f, 10.0f, 0.0f, 0.0f };
-	float spotDir[] = { 0.0f, 0.0f, -1.0f };
-	float spotAmb[] = { 0.1f, 0.1f, 0.1f, 0.1f };
-	float spotDif[] = { 0.2f, 1.0f, 0.2f, 0.2f };
-	float spotSpec[] = { 0.2f, 0.2f, 0.2f, 0.2f };
-	
-	glLightfv(GL_LIGHT1, GL_POSITION, spotPos);
-	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spotDir);
-	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0f);
-	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45.0);
-	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.5f);
-	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.2f);
-	glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.5f);
-	glLightfv(GL_LIGHT1, GL_AMBIENT, spotAmb);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, spotDif);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, spotSpec);
-
-	//glEnable(GL_LIGHT1);
-
-	//point light
-	float pointPos[] = { -10.0f, 10.0f, 0.0f, 0.0f };
-	float pointAmb[] = { 0.1f, 0.1f, 0.1f, 0.1f };
-	float pointDif[] = { 0.2f, 0.2f, 0.2f, 0.2f };
-	float pointSpec[] = { 0.2f, 0.2f, 0.2f, 0.2f };
-	glLightfv(GL_LIGHT2, GL_POSITION, pointPos);
-	glLightfv(GL_LIGHT2, GL_AMBIENT, pointAmb);
-	glLightfv(GL_LIGHT2, GL_DIFFUSE, pointDif);
-	glLightfv(GL_LIGHT2, GL_SPECULAR, pointSpec);
-
-	glEnable(GL_LIGHT2);
-
-	//directional light
-	float dirPos[] = { 0.0f, 100.0f, -100.0f, 0.0f };
-	float dirAmb[] = { 0.1f, 0.1f, 0.1f, 0.1f };
-	float dirDif[] = { 0.2f, 0.2f, 0.2f, 0.2f };
-	float dirSpec[] = { 0.2f, 0.2f, 0.2f, 0.2f };
-	glLightfv(GL_LIGHT3, GL_POSITION, dirPos);
-	glLightfv(GL_LIGHT3, GL_AMBIENT, dirAmb);
-	glLightfv(GL_LIGHT3, GL_DIFFUSE, dirDif);
-	glLightfv(GL_LIGHT3, GL_SPECULAR, dirSpec);
-	glEnable(GL_LIGHT3);
 }
-
-
-// An example of how to load a texure from a hardcoded location
-//
-void initTexture() {
-	Image tex("../work/res/textures/brick.jpg");
-
-	//glActiveTexture(GL_TEXTURE0); // Use slot 0, need to use GL_TEXTURE1 ... etc if using more than one texture PER OBJECT
-	glGenTextures(2, &g_texture); // Generate texture ID
-	glBindTexture(GL_TEXTURE_2D, g_texture); // Bind it as a 2D texture
-
-	// Setup sampling strategies
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	// Finnaly, actually fill the data into our texture
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, tex.w, tex.h, tex.glFormat(), GL_UNSIGNED_BYTE, tex.dataPointer());
-	
-	Image tex2("../work/res/textures/wood.jpg");
-
-	//glActiveTexture(GL_TEXTURE1); // Use slot 1
-	glGenTextures(2, &g_texture1); // Generate texture ID
-	glBindTexture(GL_TEXTURE_2D, g_texture1); // Bind it as a 2D texture
-
-	// Setup sampling strategies
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	// Finnaly, actually fill the data into our texture
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, tex2.w, tex2.h, tex2.glFormat(), GL_UNSIGNED_BYTE, tex2.dataPointer());
-}
-
-
 
 // An example of how to load a shader from a hardcoded location
 //
@@ -253,11 +170,7 @@ void setupCamera(int width, int height) {
 void render(int width, int height) {
 
 	// Grey/Blueish background
-	//glClearColor(0.3f, 0.3f, 0.4f, 1.0f);
-
-	//Black background
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
+	glClearColor(0.3f, 0.3f, 0.4f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
@@ -277,33 +190,11 @@ void render(int width, int height) {
 		// Texture setup
 		//
 
-		// Enable Drawing texures
-		glEnable(GL_TEXTURE_2D);
-		// Use Texture as the color
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		// Set the location for binding the texture
-		glActiveTexture(GL_TEXTURE0);
-		// Bind the texture
-		//glBindTexture(GL_TEXTURE_2D, g_texture);
+		glPushMatrix();
+		g_geometryMain->renderGeometry();
+		glPopMatrix(); //To keep things tidy.
 
-		// Render a single square as our geometry
-		// You would normally render your geometry here
-		/*
-		glBegin(GL_QUADS);
-		glNormal3f(0.0, 0.0, 1.0);
-		glTexCoord2f(0.0, 0.0);
-		glVertex3f(-5.0, -5.0, 0.0);
-		glTexCoord2f(0.0, 1.0);
-		glVertex3f(-5.0, 5.0, 0.0);
-		glTexCoord2f(1.0, 1.0);
-		glVertex3f(5.0, 5.0, 0.0);
-		glTexCoord2f(1.0, 0.0);
-		glVertex3f(5.0, -5.0, 0.0);
-		glEnd();
 		glFlush();
-		*/
-
-		g_geometry->renderGeometry(g_texture, g_texture1);
 	}
 
 
@@ -330,6 +221,7 @@ void render(int width, int height) {
 
 		// Render a single square as our geometry
 		// You would normally render your geometry here
+		/*
 		glBegin(GL_QUADS);
 		glNormal3f(0.0, 0.0, 1.0);
 		glTexCoord2f(0.0, 0.0);
@@ -341,6 +233,12 @@ void render(int width, int height) {
 		glTexCoord2f(1.0, 0.0);
 		glVertex3f(5.0, -5.0, 0.0);
 		glEnd();
+		*/
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glColor3f(1, 0, 0);
+		cgraSphere(4);
+
 		glFlush();
 
 		// Unbind our shader
@@ -349,7 +247,6 @@ void render(int width, int height) {
 
 
 	// Disable flags for cleanup (optional)
-	//glDisable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_NORMALIZE);
@@ -385,7 +282,7 @@ int main(int argc, char **argv) {
 	// If we have multiple windows we will need to switch contexts
 	glfwMakeContextCurrent(g_window);
 
-	
+
 
 	// Initialize GLEW
 	// must be done after making a GL context current (glfwMakeContextCurrent in this case)
@@ -427,14 +324,14 @@ int main(int argc, char **argv) {
 		cout << "GL_ARB_debug_output not available. No worries." << endl;
 	}
 
+
 	// Initialize Geometry/Material/Lights
 	// YOUR CODE GOES HERE
 	// ...
 	initLight();
-	initTexture();
 	initShader();
 
-	g_geometry = new Geometry();
+	g_geometryMain = new GeometryMain();
 
 	// Loop until the user closes the window
 	while (!glfwWindowShouldClose(g_window)) {

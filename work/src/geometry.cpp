@@ -3,7 +3,7 @@
 // Copyright (c) 2016 Taehyun Rhee, Joshua Scott, Ben Allen
 //
 // This software is provided 'as-is' for assignment of COMP308 in ECS,
-// Victoria University of Wellington, without any express or implied warranty. 
+// Victoria University of Wellington, without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from
 // the use of this software.
 //
@@ -27,74 +27,34 @@
 using namespace std;
 using namespace cgra;
 
+int texturesSize;
+GLuint *textures;
 
 Geometry::Geometry(string filename) {
 	m_filename = filename;
-	object obj;
-	readOBJ(filename,&obj);
-	if (obj.m_triangles.size() > 0) {
-		createDisplayListPoly(&obj);
+	readOBJ(filename);
+	if (m_triangles.size() > 0) {
+		createDisplayListPoly();
+		//createDisplayListWire();
 	}
-	objects.push_back(obj);
 }
 
 
-Geometry::Geometry() { 
-
-	object obj;
-
-	readOBJ("../work/res/assets/box.obj", &obj);
-	if (obj.m_triangles.size() > 0) {
-		createDisplayListPoly(&obj);
-	}
-	objects.push_back(obj);
-
-	readOBJ("../work/res/assets/bunny.obj", &obj);
-	if (obj.m_triangles.size() > 0) {
-		createDisplayListPoly(&obj);
-	}
-	objects.push_back(obj);
-
-	readOBJ("../work/res/assets/sphere.obj", &obj);
-	if (obj.m_triangles.size() > 0) {
-		createDisplayListPoly(&obj);
-	}
-	objects.push_back(obj);
-	
-	readOBJ("../work/res/assets/table.obj", &obj);
-	if (obj.m_triangles.size() > 0) {
-		createDisplayListPoly(&obj);
-	}
-	objects.push_back(obj);
-	
-	readOBJ("../work/res/assets/teapot.obj", &obj);
-	if (obj.m_triangles.size() > 0) {
-		createDisplayListPoly(&obj);
-	}
-	objects.push_back(obj);
-
-	readOBJ("../work/res/assets/torus.obj", &obj);
-	if (obj.m_triangles.size() > 0) {
-		createDisplayListPoly(&obj);
-	}
-	objects.push_back(obj);
-}
+Geometry::~Geometry() { }
 
 
-void Geometry::readOBJ(string filename, struct object* obj) {
-	
-	obj->m_filename = filename;
+void Geometry::readOBJ(string filename) {
 
 	// Make sure our geometry information is cleared
-	obj->m_points.clear();
-	obj->m_uvs.clear();
-	obj->m_normals.clear();
-	obj->m_triangles.clear();
+	m_points.clear();
+	m_uvs.clear();
+	m_normals.clear();
+	m_triangles.clear();
 
 	// Load dummy points because OBJ indexing starts at 1 not 0
-	obj->m_points.push_back(vec3(0,0,0));
-	obj->m_uvs.push_back(vec2(0,0));
-	obj->m_normals.push_back(vec3(0,0,1));
+	m_points.push_back(vec3(0,0,0));
+	m_uvs.push_back(vec2(0,0));
+	m_normals.push_back(vec3(0,0,1));
 
 
 	ifstream objFile(filename);
@@ -105,7 +65,7 @@ void Geometry::readOBJ(string filename, struct object* obj) {
 	}
 
 	cout << "Reading file " << filename << endl;
-	
+
 	// good() means that failbit, badbit and eofbit are all not set
 	while(objFile.good()) {
 
@@ -125,31 +85,31 @@ void Geometry::readOBJ(string filename, struct object* obj) {
 			if (mode == "v") {
 				vec3 v;
 				objLine >> v.x >> v.y >> v.z;
-				obj->m_points.push_back(v);
+				m_points.push_back(v);
 
 			} else if(mode == "vn") {
 				vec3 vn;
 				objLine >> vn.x >> vn.y >> vn.z;
-				obj->m_normals.push_back(vn);
+				m_normals.push_back(vn);
 
 			} else if(mode == "vt") {
 				vec2 vt;
 				objLine >> vt.x >> vt.y;
-				obj->m_uvs.push_back(vt);
+				m_uvs.push_back(vt);
 
 			} else if(mode == "f") {
 
 				vector<vertex> verts;
-				while (objLine.good()) {
+				while (objLine.good()){
 					vertex v;
 
 					//-------------------------------------------------------------
 					// [Assignment 1] :
-					// Modify the following to parse the bunny.obj-> It has no uv
+					// Modify the following to parse the bunny.obj. It has no uv
 					// coordinates so each vertex for each face is in the format
 					// v//vn instead of the usual v/vt/vn.
 					//
-					// Modify the following to parse the dragon.obj-> It has no
+					// Modify the following to parse the dragon.obj. It has no
 					// normals or uv coordinates so the format for each vertex is
 					// v instead of v/vt/vn or v//vn.
 					//
@@ -159,76 +119,111 @@ void Geometry::readOBJ(string filename, struct object* obj) {
 
 					// Assignment code (assumes you have all of v/vt/vn for each vertex)
 					objLine >> v.p;		// Scan in position index
-					if (obj->m_normals.size() > 1) {
+					if (m_normals.size() > 1) { //if we are not looking at dragon (which has no '/'s)
 						objLine.ignore(1);	// Ignore the '/' character
-						if (obj->m_uvs.size() > 1) {
+						if (m_uvs.size() > 1) { //if there are usvs, do the thing
 							objLine >> v.t;		// Scan in uv (texture coord) index
 						}
 						objLine.ignore(1);	// Ignore the '/' character
+
 						objLine >> v.n;		// Scan in normal index
 					}
 					verts.push_back(v);
 				}
-
-				// IFF we have 3 verticies, construct a triangle
-				if(verts.size() == 3){
+				//cout << verts.size();
+				// IFF we have 4 verticies, construct a square
+				if(verts.size() >= 3){
 					triangle tri;
+					//cout << m_triangles.size() << endl;
 					tri.v[0] = verts[0];
 					tri.v[1] = verts[1];
 					tri.v[2] = verts[2];
-					obj->m_triangles.push_back(tri);
-
+					m_triangles.push_back(tri);
+					//cout << m_triangles.size() << endl;
 				}
 			}
 		}
 	}
 
 	cout << "Reading OBJ file is DONE." << endl;
-	cout << obj->m_points.size()-1 << " points" << endl;
-	cout << obj->m_uvs.size()-1 << " uv coords" << endl;
-	cout << obj->m_normals.size()-1 << " normals" << endl;
-	cout << obj->m_triangles.size() << " faces" << endl;
+	cout << m_points.size()-1 << " points" << endl;
+	cout << m_uvs.size()-1 << " uv coords" << endl;
+	cout << m_normals.size()-1 << " normals" << endl;
+	cout << m_triangles.size() << " faces" << endl;
 
 
 	// If we didn't have any normals, create them
-	if (obj->m_normals.size() <= 1) createNormals(obj);
+	if (m_normals.size() <= 1) createNormals();
 }
 
 
 //-------------------------------------------------------------
 // [Assignment 1] :
-// Fill the following function to populate the normals for 
+// Fill the following function to populate the normals for
 // the model currently loaded. Compute per face normals
 // first and get that working before moving onto calculating
 // per vertex normals.
 //-------------------------------------------------------------
-void Geometry::createNormals(struct object* obj) {
+void Geometry::createNormals() {
 	// YOUR CODE GOES HERE
-	// ...
-	//
-	// Calculating per face normals and applying to vertices
-	for (int i = 0; i < obj->m_triangles.size(); i++) {
-		//calculate cross product (face normal): (p2-p1)x(p3-p1)
-		vec3 u = obj->m_points[obj->m_triangles[i].v[1].p] - obj->m_points[obj->m_triangles[i].v[0].p];	//calculate 1st vector
-		vec3 v = obj->m_points[obj->m_triangles[i].v[2].p] - obj->m_points[obj->m_triangles[i].v[0].p];	//calculate 2nd vector
-		vec3 n = cross(u, v);	//calculate cross product from two vectors
-		obj->m_normals.push_back(n);		//add normal to list
-		obj->m_triangles[i].v[0].n = obj->m_normals.size()-1;	//apply normal to vertex
 
-		//(p3 - p2)x(p1 - p2)
-		u = obj->m_points[obj->m_triangles[i].v[2].p] - obj->m_points[obj->m_triangles[i].v[1].p];	//calculate 1st vector
-		v = obj->m_points[obj->m_triangles[i].v[0].p] - obj->m_points[obj->m_triangles[i].v[1].p];	//calculate 2nd vector
-		n = cross(u, v);	//calculate cross product from two vectors
-		obj->m_normals.push_back(n);		//add normal to list
-		obj->m_triangles[i].v[1].n = obj->m_normals.size() - 1;	//apply normal to vertex
 
-		//(p1 - p3)x(p2 - p3)
-		u = obj->m_points[obj->m_triangles[i].v[0].p] - obj->m_points[obj->m_triangles[i].v[2].p];	//calculate 1st vector
-		v = obj->m_points[obj->m_triangles[i].v[1].p] - obj->m_points[obj->m_triangles[i].v[2].p];	//calculate 2nd vector
-		n = cross(u, v);	//calculate cross product from two vectors
-		obj->m_normals.push_back(n);		//add normal to list
-		obj->m_triangles[i].v[2].n = obj->m_normals.size() - 1;	//apply normal to vertex
+	//going through all the vertecies in all the triangles
+	int i;
+	for (i = 0; i < m_triangles.size(); i++) {
+
+		triangle currentSquare = m_triangles[i];
+
+		vertex v1 = currentSquare.v[0];
+		vertex v2 = currentSquare.v[1];
+		vertex v3 = currentSquare.v[2];
+		//vertex v4 = currentSquare.v[3];
+
+		vec3 vecU1 = m_points[v2.p] - m_points[v1.p];
+		vec3 vecV1 = m_points[v3.p] - m_points[v1.p];
+		vec3 norm1 = cross(vecU1, vecV1); //the normal for v1
+
+		vec3 vecU2 = m_points[v3.p] - m_points[v2.p];
+		vec3 vecV2 = m_points[v1.p] - m_points[v2.p];
+		vec3 norm2 = cross(vecU2, vecV2); //the normal for v2
+
+		vec3 vecU3 = m_points[v1.p] - m_points[v3.p];
+		vec3 vecV3 = m_points[v2.p] - m_points[v3.p];
+		vec3 norm3 = cross(vecU3, vecV3); //the normal for v3
+
+		//now we store it in m_triangles
+
+		m_normals.push_back(norm1);
+		//m_triangles[i].v[0].n = m_normals.size()-1;
+		m_normals.push_back(norm2);
+		//m_triangles[i].v[1].n = m_normals.size()-1;
+		m_normals.push_back(norm3);
+		//m_triangles[i].v[2].n = m_normals.size()-1;
 	}
+}
+
+
+//-------------------------------------------------------------
+// [Assignment 1] :
+// Fill the following function to create display list
+// of the obj file to show it as polygon model
+//-------------------------------------------------------------
+void Geometry::createDisplayListPoly() {
+	// Delete old list if there is one
+	if (m_displayListPoly) glDeleteLists(m_displayListPoly, 1);
+
+	// Create a new list
+	cout << "Creating Poly Geometry" << endl;
+	m_displayListPoly = glGenLists(1);
+	glNewList(m_displayListPoly, GL_COMPILE);
+
+	// YOUR CODE GOES HERE
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_TRIANGLES);
+	createDisplayList(); //FYI: this method calls glEndList()
+
+	cout << "Finished creating Poly Geometry" << endl;
 }
 
 
@@ -237,169 +232,81 @@ void Geometry::createNormals(struct object* obj) {
 // Fill the following function to create display list
 // of the obj file to show it as wireframe model
 //-------------------------------------------------------------
-void Geometry::createDisplayListPoly(struct object* obj) {
+void Geometry::createDisplayListWire() {
 	// Delete old list if there is one
-	obj->m_displayListPoly = GLuint(0);
-	if (obj->m_displayListPoly) glDeleteLists(obj->m_displayListPoly, 2);
+	if (m_displayListWire) glDeleteLists(m_displayListWire, 1);
 
 	// Create a new list
-	cout << "Creating Poly Geometry" << endl;
-	obj->m_displayListPoly = glGenLists(2);
-	glNewList(obj->m_displayListPoly, GL_COMPILE);
+	cout << "Creating Wire Geometry" << endl;
+	m_displayListWire = glGenLists(1);
+	glNewList(m_displayListWire, GL_COMPILE);
 
 	// YOUR CODE GOES HERE
-	// ...
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glBegin(GL_TRIANGLES);
-	for (int i = 0; i < obj->m_triangles.size(); i++) {	//loop through all triangles
-		for (int j = 0; j < 3; j++) {	//loop through each vertex of the triangle
-			glNormal3f(obj->m_normals[obj->m_triangles[i].v[j].n].x, obj->m_normals[obj->m_triangles[i].v[j].n].y, obj->m_normals[obj->m_triangles[i].v[j].n].z);	//add the normal
-			glTexCoord2f(obj->m_uvs[obj->m_triangles[i].v[j].t].x*4, obj->m_uvs[obj->m_triangles[i].v[j].t].y*4);	//add the uv co-ord
-			glVertex3f(obj->m_points[obj->m_triangles[i].v[j].p].x, obj->m_points[obj->m_triangles[i].v[j].p].y, obj->m_points[obj->m_triangles[i].v[j].p].z);	//add the vertex
+	createDisplayList(); //FYI: this method calls glEndList()
+
+	cout << "Finished creating Wire Geometry" << endl;
+}
+
+//This method is called ONLY in createDisplayListPoly and createDisplayListWire, this method creates the geometry.
+//createDisplayListPoly and createDisplayListWire arae wrapper methods for this method.
+void Geometry::createDisplayList(){
+
+	//go through all the verticies in all the triangles in list of triangles 'm_triangles'.
+
+	//used for iterating through nested for loop bellow.
+	int i, j;
+
+	//triangles always have 3 verticies.
+	int numberOfVerticies= 3;
+
+	for(i = 0; i < m_triangles.size(); i++){
+
+		//the one triangle we are currently working with.
+		triangle currentSquare = m_triangles[i];
+
+		//used to make the for loop look cleaner
+		float x, y, z;
+		for(j = 0; j < numberOfVerticies; j++){
+
+			//normals
+			x = m_normals[currentSquare.v[j].n].x;
+			y = m_normals[currentSquare.v[j].n].y;
+			z = m_normals[currentSquare.v[j].n].z;
+			glNormal3f(x, y, z);
+
+			//UVs
+			x = m_uvs[currentSquare.v[j].t].x;
+			y = m_uvs[currentSquare.v[j].t].y;
+			int mult = 4; //multiplier, spreads out the texture on each face.
+			//glTexCoord2f(x * mult, y * mult);
+			glMultiTexCoord2f(GL_TEXTURE0, x, y);
+			glMultiTexCoord2f(GL_TEXTURE1, x, y);
+
+			//points
+			x = m_points[currentSquare.v[j].p].x;
+			y = m_points[currentSquare.v[j].p].y;
+			z = m_points[currentSquare.v[j].p].z;
+
+			glVertex3f(x, y, z);
 		}
 	}
 	glEnd();
-	glFlush();
-	
 	glEndList();
-	cout << "Finished creating Poly Geometry" << endl;
+}
+
+void Geometry::renderGeometry() {
+	
+	glShadeModel(GL_SMOOTH);
+	glCallList(m_displayListPoly);
 }
 
 
-void Geometry::renderGeometry(GLuint g_texture, GLuint g_texture1) {
-
-	float *mat = new float[4];
-		glShadeModel(GL_SMOOTH);
-		for (object obj : objects) {
-
-			if (obj.m_filename.find("box") != std::string::npos) {
-				//Do stuff to box
-				glBindTexture(GL_TEXTURE_2D, g_texture);
-				glPushMatrix();
-				glTranslatef(4.0f, 2.0f, -4.0f);
-
-				glCallList(obj.m_displayListPoly);
-
-				glPopMatrix();
-				glBindTexture(GL_TEXTURE_2D,0);
-			}
-			else if (obj.m_filename.find("bunny") != std::string::npos) {
-				//Do stuff to bunny
-				glEnable(GL_COLOR_MATERIAL);
-				glPushMatrix();
-				glColor3f(1.0f, 1.0f, 1.0f);
-				mat[0] = 0;
-				mat[1] = 0;
-				mat[2] = 0;
-				mat[3] = 1;
-				glMaterialfv(GL_FRONT, GL_AMBIENT, mat);
-				mat[0] = 0.1;
-				mat[1] = 0.1;
-				mat[2] = 0.1;
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, mat);
-				mat[0] = 0.1;
-				mat[1] = 0.1;
-				mat[2] = 0.1;
-				glMaterialfv(GL_FRONT, GL_SPECULAR, mat);
-				glMaterialf(GL_FRONT, GL_SHININESS, 0.1 * 128.0);
-
-				glCallList(obj.m_displayListPoly);
-
-				glPopMatrix();
-				glDisable(GL_COLOR_MATERIAL);
-			}
-			else if (obj.m_filename.find("sphere") != std::string::npos) {
-				//Do stuff to sphere
-				glEnable(GL_COLOR_MATERIAL);
-				glPushMatrix();
-				glTranslatef(-4.0f, 1.5f, 4.0f);
-				glColor3f(1.0f, 0.6f, 0.0f);
-				mat[0] = 0.0215;
-				mat[1] = 0.1745;
-				mat[2] = 0.0215;
-				mat[3] = 1;
-				glMaterialfv(GL_FRONT, GL_AMBIENT, mat);
-				mat[0] = 0.07568;
-				mat[1] = 0.61424;
-				mat[2] = 0.07568;
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, mat);
-				mat[0] = 0.633;
-				mat[1] = 0.727811;
-				mat[2] = 0.633;
-				glMaterialfv(GL_FRONT, GL_SPECULAR, mat);
-				glMaterialf(GL_FRONT, GL_SHININESS, 0.6 * 128.0);
-
-				glCallList(obj.m_displayListPoly);
-				
-				glPopMatrix();
-				glDisable(GL_COLOR_MATERIAL);
-			}
-			else if (obj.m_filename.find("table") != std::string::npos) {
-				//Do stuff to table
-				glEnable(GL_COLOR_MATERIAL); //this should make lighting work on the texture... *should*...
-				glBindTexture(GL_TEXTURE_2D, g_texture1);
-				glPushMatrix();
-				glTranslatef(0.0f, -0.5f, 0.0f);
-
-				glCallList(obj.m_displayListPoly);
-
-				glPopMatrix();
-				glDisable(GL_COLOR_MATERIAL);
-				glBindTexture(GL_TEXTURE_2D, 0);
-			}
-			else if (obj.m_filename.find("teapot") != std::string::npos) {
-				//Do stuff to teapot
-				glEnable(GL_COLOR_MATERIAL);
-				glPushMatrix();
-				glColor3f(0.3f, 0.3f, 0.5f);
-				glTranslatef(-4.0f, 0.0f, -4.0f);
-				mat[0] = 0.25;
-				mat[1] = 0.25;
-				mat[2] = 0.5;
-				mat[3] = 1;
-				glMaterialfv(GL_FRONT, GL_AMBIENT, mat);
-				mat[0] = 0.4;
-				mat[1] = 0.4;
-				mat[2] = 0.4;
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, mat);
-				mat[0] = 0.774597;
-				mat[1] = 0.774597;
-				mat[2] = 0.774597;
-				glMaterialfv(GL_FRONT, GL_SPECULAR, mat);
-				glMaterialf(GL_FRONT, GL_SHININESS, 0.25 * 128.0);
-
-				glCallList(obj.m_displayListPoly);
-
-				glPopMatrix();
-				glColor3f(1.0f, 1.0f, 1.0f);
-				glDisable(GL_COLOR_MATERIAL);
-			}
-			else if (obj.m_filename.find("torus") != std::string::npos) {
-				//Do stuff to torus
-				glEnable(GL_COLOR_MATERIAL);
-				glPushMatrix();
-				glColor3f(1.0f, 0.0f, 0.0f);
-				glTranslatef(4.0f, 0.5f, 4.0f);
-				mat[0] = 0;
-				mat[1] = 0;
-				mat[2] = 0;
-				mat[3] = 1;
-				glMaterialfv(GL_FRONT, GL_AMBIENT, mat);
-				mat[0] = 0.5;
-				mat[1] = 0;
-				mat[2] = 0;
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, mat);
-				mat[0] = 0.7;
-				mat[1] = 0.6;
-				mat[2] = 0.6;
-				glMaterialfv(GL_FRONT, GL_SPECULAR, mat);
-				glMaterialf(GL_FRONT, GL_SHININESS, 0.25 * 128.0);
-
-				glCallList(obj.m_displayListPoly);
-
-				glPopMatrix();
-				glColor3f(1.0f, 1.0f, 1.0f);
-				glDisable(GL_COLOR_MATERIAL);
-			}
-		}
+void Geometry::toggleWireFrame() {
+	cout << "WARNING: toggleWireFrame() does nothing!!!" << endl;
+	cout << "WARNING: toggleWireFrame() does nothing!!!" << endl;
+	cout << "WARNING: toggleWireFrame() does nothing!!!" << endl;
+	m_wireFrameOn = false;//!m_wireFrameOn;
 }
