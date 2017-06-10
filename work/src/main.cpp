@@ -51,6 +51,10 @@ float g_pitch = 0;
 float g_yaw = 0;
 float g_zoom = 1.0;
 
+float g_cam_x = 0;
+float g_cam_y = 0;
+float g_cam_z = -50;
+
 // Values and fields to showcase the use of shaders
 // Remove when modifying main.cpp for Assignment 3
 //
@@ -106,10 +110,29 @@ void scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
 // Called for every key event on since the last glfwPollEvents
 //
 void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
-	// cout << "Key Callback :: key=" << key << "scancode=" << scancode
-	// 	<< "action=" << action << "mods=" << mods << endl;
+	// cout << "Key Callback :: key=" << key << "scancode=" << scancode	<< "action=" << action << "mods=" << mods << endl;
 	// YOUR CODE GOES HERE
 	// ...
+
+	if (key == GLFW_KEY_W) {
+		//move forward
+		
+	}
+	else if (key == GLFW_KEY_A) {
+		//move left
+	}
+	else if (key == GLFW_KEY_S) {
+		//move back
+	}
+	else if (key == GLFW_KEY_D) {
+		//move right
+	}
+	else if (key == GLFW_KEY_SPACE) {
+		//move up
+	}
+	else if (key == GLFW_KEY_LEFT_CONTROL) {
+		//move down
+	}
 }
 
 
@@ -136,49 +159,6 @@ void initLight() {
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
 
 	glEnable(GL_LIGHT0);
-
-	//spotlight
-	float spotPos[] = { 0.0f, 10.0f, 0.0f, 0.0f };
-	float spotDir[] = { 0.0f, 0.0f, -1.0f };
-	float spotAmb[] = { 0.1f, 0.1f, 0.1f, 0.1f };
-	float spotDif[] = { 0.2f, 1.0f, 0.2f, 0.2f };
-	float spotSpec[] = { 0.2f, 0.2f, 0.2f, 0.2f };
-	
-	glLightfv(GL_LIGHT1, GL_POSITION, spotPos);
-	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spotDir);
-	glLightf(GL_LIGHT1, GL_SPOT_EXPONENT, 2.0f);
-	glLightf(GL_LIGHT1, GL_SPOT_CUTOFF, 45.0);
-	glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.5f);
-	glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.2f);
-	glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.5f);
-	glLightfv(GL_LIGHT1, GL_AMBIENT, spotAmb);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, spotDif);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, spotSpec);
-
-	//glEnable(GL_LIGHT1);
-
-	//point light
-	float pointPos[] = { -10.0f, 10.0f, 0.0f, 0.0f };
-	float pointAmb[] = { 0.1f, 0.1f, 0.1f, 0.1f };
-	float pointDif[] = { 0.2f, 0.2f, 0.2f, 0.2f };
-	float pointSpec[] = { 0.2f, 0.2f, 0.2f, 0.2f };
-	glLightfv(GL_LIGHT2, GL_POSITION, pointPos);
-	glLightfv(GL_LIGHT2, GL_AMBIENT, pointAmb);
-	glLightfv(GL_LIGHT2, GL_DIFFUSE, pointDif);
-	glLightfv(GL_LIGHT2, GL_SPECULAR, pointSpec);
-
-	glEnable(GL_LIGHT2);
-
-	//directional light
-	float dirPos[] = { 0.0f, 100.0f, -100.0f, 0.0f };
-	float dirAmb[] = { 0.1f, 0.1f, 0.1f, 0.1f };
-	float dirDif[] = { 0.2f, 0.2f, 0.2f, 0.2f };
-	float dirSpec[] = { 0.2f, 0.2f, 0.2f, 0.2f };
-	glLightfv(GL_LIGHT3, GL_POSITION, dirPos);
-	glLightfv(GL_LIGHT3, GL_AMBIENT, dirAmb);
-	glLightfv(GL_LIGHT3, GL_DIFFUSE, dirDif);
-	glLightfv(GL_LIGHT3, GL_SPECULAR, dirSpec);
-	glEnable(GL_LIGHT3);
 }
 
 
@@ -188,7 +168,7 @@ void initTexture() {
 	Image tex("../work/res/textures/brick.jpg");
 
 	//glActiveTexture(GL_TEXTURE0); // Use slot 0, need to use GL_TEXTURE1 ... etc if using more than one texture PER OBJECT
-	glGenTextures(2, &g_texture); // Generate texture ID
+	glGenTextures(1, &g_texture); // Generate texture ID
 	glBindTexture(GL_TEXTURE_2D, g_texture); // Bind it as a 2D texture
 
 	// Setup sampling strategies
@@ -200,22 +180,7 @@ void initTexture() {
 
 	// Finnaly, actually fill the data into our texture
 	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, tex.w, tex.h, tex.glFormat(), GL_UNSIGNED_BYTE, tex.dataPointer());
-	
-	Image tex2("../work/res/textures/wood.jpg");
 
-	//glActiveTexture(GL_TEXTURE1); // Use slot 1
-	glGenTextures(2, &g_texture1); // Generate texture ID
-	glBindTexture(GL_TEXTURE_2D, g_texture1); // Bind it as a 2D texture
-
-	// Setup sampling strategies
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	// Finnaly, actually fill the data into our texture
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, tex2.w, tex2.h, tex2.glFormat(), GL_UNSIGNED_BYTE, tex2.dataPointer());
 }
 
 
@@ -253,10 +218,10 @@ void setupCamera(int width, int height) {
 void render(int width, int height) {
 
 	// Grey/Blueish background
-	//glClearColor(0.3f, 0.3f, 0.4f, 1.0f);
+	glClearColor(0.3f, 0.3f, 0.4f, 1.0f);
 
 	//Black background
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -284,7 +249,7 @@ void render(int width, int height) {
 		// Set the location for binding the texture
 		glActiveTexture(GL_TEXTURE0);
 		// Bind the texture
-		//glBindTexture(GL_TEXTURE_2D, g_texture);
+		glBindTexture(GL_TEXTURE_2D, g_texture);
 
 		// Render a single square as our geometry
 		// You would normally render your geometry here
