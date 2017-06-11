@@ -25,11 +25,12 @@ Engine::Engine()
 
 	light = new Light();
 
-	if (fboSupported)
-		generateFBO();
+	//TODO: Fix plz
+	//if (fboSupported)
+	//	generateFBO();
 
-	if (!fboUsed)
-		createScreenCopyTexture();
+	//if (!fboUsed)
+	//	createScreenCopyTexture();
 
 	if (shaderSupported) {
 		//TODO: this stuff
