@@ -3,7 +3,7 @@
 // Copyright (c) 2016 Taehyun Rhee, Joshua Scott, Ben Allen
 //
 // This software is provided 'as-is' for assignment of COMP308 in ECS,
-// Victoria University of Wellington, without any express or implied warranty. 
+// Victoria University of Wellington, without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from
 // the use of this software.
 //
@@ -33,30 +33,11 @@ struct triangle {
 	vertex v[3]; //requires 3 verticies
 };
 
-struct object {
-	std::string m_filename;
-	std::vector<cgra::vec3> m_points;	// Point list
-	std::vector<cgra::vec2> m_uvs;		// Texture Coordinate list
-	std::vector<cgra::vec3> m_normals;	// Normal list
-	std::vector<triangle> m_triangles;	// Triangle/Face list
-	GLuint m_displayListPoly = 0;
-
-};
-
 class Geometry {
 private:
 
 	// Feilds for storing raw obj information
 	std::string m_filename;
-	//std::vector<cgra::vec3> m_points;	// Point list
-	//std::vector<cgra::vec2> m_uvs;		// Texture Coordinate list
-	//std::vector<cgra::vec3> m_normals;	// Normal list
-	//std::vector<triangle> m_triangles;	// Triangle/Face list
-
-	std::vector<object> objects;
-
-	//GLuint g_texture = 0;
-	//GLuint g_texture1 = 0;
 
 	bool m_wireFrameOn = false;
 
@@ -64,16 +45,26 @@ private:
 	GLuint m_displayListPoly = 0; // DisplayList for Polygon
 	GLuint m_displayListWire = 0; // DisplayList for Wireframe
 
-	void readOBJ(std::string, struct object*);
 
-	void createNormals(struct object*);
+	std::vector<cgra::vec3> m_points;	// Point list
+	std::vector<cgra::vec2> m_uvs;		// Texture Coordinate list
+	std::vector<cgra::vec3> m_normals;	// Normal list
+	std::vector<triangle> m_triangles;	// Triangle/Face list
 
-	void createDisplayListPoly(struct object*);
+	void readOBJ(std::string);
+
+	void createNormals();
+
+	void createDisplayListPoly();
+	void createDisplayListWire();
+
+	//A new method to clean up repeated code.
+	void createDisplayList();
 
 public:
 	Geometry(std::string);
-	Geometry();
+	~Geometry();
 
-	void renderGeometry(GLuint, GLuint);
-	
+	void renderGeometry();
+	void toggleWireFrame();
 };
