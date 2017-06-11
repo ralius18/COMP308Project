@@ -25,6 +25,7 @@
 #include "opengl.hpp"
 #include "geometry.hpp"
 #include "geometryMain.hpp"
+#include "engine.hpp"
 
 using namespace std;
 using namespace cgra;
@@ -67,6 +68,8 @@ GLuint g_shader = 0;
 
 //Loads and Renders objects with multi layering textures
 GeometryMain *g_geometryMain = nullptr;
+
+Engine *g_engine;
 
 // Mouse Button callback
 // Called for mouse movement event on since the last glfwPollEvents
@@ -220,7 +223,8 @@ void render(int width, int height) {
 	if (!g_useShader) {
 
 		glPushMatrix();
-		g_geometryMain->renderGeometry();
+			g_geometryMain->renderGeometry();
+			g_engine->render();
 		glPopMatrix(); //To keep things tidy.
 
 		glFlush();
@@ -361,6 +365,8 @@ int main(int argc, char **argv) {
 	initShader();
 
 	g_geometryMain = new GeometryMain();
+
+	g_engine = new Engine();
 
 	// Loop until the user closes the window
 	while (!glfwWindowShouldClose(g_window)) {

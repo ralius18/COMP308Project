@@ -39,10 +39,5 @@ void Light::apply()
 
 void Light::render()
 {
-	glColor4f(1, 1, 1, 1);
-
-	glPushMatrix();
-	glTranslatef(lightPos[0], lightPos[1], lightPos[2]);
 	glCallList(displayList);
-	glPopMatrix();
 }
