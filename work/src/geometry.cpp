@@ -281,8 +281,8 @@ void Geometry::createDisplayList(){
 			y = m_uvs[currentSquare.v[j].t].y;
 			int mult = 4; //multiplier, spreads out the texture on each face.
 			//glTexCoord2f(x * mult, y * mult);
-			glMultiTexCoord2f(GL_TEXTURE0, x, y);
-			glMultiTexCoord2f(GL_TEXTURE1, x, y);
+			glMultiTexCoord2f(GL_TEXTURE0, x*mult, y*mult);
+			glMultiTexCoord2f(GL_TEXTURE1, x*mult, y*mult);
 
 			//points
 			x = m_points[currentSquare.v[j].p].x;

@@ -39,7 +39,8 @@ GeometryMain::GeometryMain() {
 GeometryMain::~GeometryMain() { }
 
 void GeometryMain::loadObjects() {
-	sphere = new Geometry("../work/res/assets/sphere.obj");
+	objects[0] = new Geometry("../work/res/assets/sphere.obj");
+	objects[1] = new Geometry("../work/res/assets/box.obj");
 }
 
 void GeometryMain::loadTextures() {
@@ -90,9 +91,10 @@ void GeometryMain::renderGeometry() {
 
 	//Draw floor
 	glBegin(GL_QUADS);
-	for (int z = -10; z <= 10; z += 20) {
+	int width = 40; //could also be height cause its a square.
+	for (int z = -width/2; z <= width/2; z += width) {
 		int x = z;
-		int xdiff = z<0?20:-20;
+		int xdiff = z<0?width:-width;
 		for (; x != z+(2*xdiff); x+=xdiff) {
 			glNormal3f(x, -2, z);
 			int mult = 1;
@@ -108,7 +110,11 @@ void GeometryMain::renderGeometry() {
 	//glColor3f(0.6f, 0.2f, 0.0f); //Metalic Bronze color
 	glPushMatrix();
 	//glTranslatef(0.0f, -1.0f, 0.0f);
-	sphere->renderGeometry();
+	objects[sphere]->renderGeometry();
+
+	glTranslatef(10, 0, -10);
+	objects[box]->renderGeometry();
+
 
 	// Cleanup
 	glPopMatrix();

@@ -46,8 +46,8 @@ float g_zfar = 1000.0;
 //
 bool g_leftMouseDown = false;
 vec2 g_mousePosition = vec2(0, 0);
-float g_pitch = 0;
-float g_yaw = 0;
+float g_pitch = 0;	//rotation around X axis
+float g_yaw = 0;	//rotation around Y axis
 float g_zoom = 1.0;
 
 const float mouseXsensitivity = 0.5;
@@ -113,7 +113,7 @@ void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
 //
 void scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
 	// cout << "Scroll Callback :: xoffset=" << xoffset << "yoffset=" << yoffset << endl;
-	g_zoom -= yoffset * g_zoom * 0.2;
+	// g_zoom -= yoffset * g_zoom * 0.2;
 }
 
 
@@ -125,13 +125,33 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	// YOUR CODE GOES HERE
 	// ...
 	if (action == GLFW_PRESS || GLFW_REPEAT) {
-		switch (key) {
-		case GLFW_KEY_W: g_cam_z += 0.5; break;
-		case GLFW_KEY_S: g_cam_z -= 0.5; break;
-		case GLFW_KEY_A: g_cam_x += 0.5; break;
-		case GLFW_KEY_D: g_cam_x -= 0.5; break;
-		case GLFW_KEY_Z: g_cam_y += 0.1; break;
-		case GLFW_KEY_C: g_cam_y -= 0.1; break;
+		float yRotRad;
+		float speed = 0.5;
+		if (key == GLFW_KEY_W) {
+			yRotRad = (g_yaw / 180 * math::pi());
+			g_cam_x -= sin(yRotRad) * speed;
+			g_cam_z += cos(yRotRad) * speed;
+		}
+		if (key == GLFW_KEY_S) {
+			yRotRad = (g_yaw / 180 * math::pi());
+			g_cam_x += sin(yRotRad) * speed;
+			g_cam_z -= cos(yRotRad) * speed;
+		}
+		if (key == GLFW_KEY_A) {
+			yRotRad = (g_yaw / 180 * math::pi());
+			g_cam_x += cos(yRotRad) * speed;
+			g_cam_z += sin(yRotRad) * speed;
+		}
+		if (key == GLFW_KEY_D) {
+			yRotRad = (g_yaw / 180 * math::pi());
+			g_cam_x -= cos(yRotRad) * speed;
+			g_cam_z -= sin(yRotRad) * speed;
+		}
+		if (key == GLFW_KEY_SPACE) {
+			g_cam_y -= speed;
+		}
+		if (key == GLFW_KEY_LEFT_CONTROL) {
+			g_cam_y += speed;
 		}
 	}
 }
@@ -367,6 +387,10 @@ int main(int argc, char **argv) {
 	g_geometryMain = new GeometryMain();
 
 	g_engine = new Engine();
+
+	cout << "--WASD for camera movement." << endl;
+	cout << "--Left click for camera rotation." << endl;
+	cout << "--Space and left Ctrl for up / down." << endl;
 
 	// Loop until the user closes the window
 	while (!glfwWindowShouldClose(g_window)) {

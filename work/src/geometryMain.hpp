@@ -26,7 +26,9 @@ private:
 
 	int texturesSize;
 	GLuint *textures;
-	Geometry *sphere;
+	Geometry **objects = new Geometry*[2];
+	enum objectNames { sphere, box };
+
 	void loadObjects();
 	void loadTextures();
 
