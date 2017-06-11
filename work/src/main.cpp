@@ -24,6 +24,7 @@
 #include "simple_shader.hpp"
 #include "opengl.hpp"
 #include "geometry.hpp"
+#include "light.hpp"
 
 using namespace std;
 using namespace cgra;
@@ -40,7 +41,7 @@ Geometry *g_geometry = nullptr;
 // 
 float g_fovy = 20.0f;
 float g_znear = 0.1f;
-float g_zfar = 1000.0f;
+float g_zfar = 2000.0f;
 
 
 // Mouse controlled Camera values
@@ -62,6 +63,8 @@ bool g_useShader = false;
 GLuint g_texture = 0;
 GLuint g_texture1 = 0;
 GLuint g_shader = 0;
+
+Light *g_light;
 
 
 // Mouse Button callback
@@ -269,6 +272,8 @@ void render(int width, int height) {
 		*/
 
 		g_geometry->renderGeometry(g_texture, g_texture1);
+
+		g_light->render();
 	}
 
 
@@ -400,6 +405,7 @@ int main(int argc, char **argv) {
 	initShader();
 
 	g_geometry = new Geometry();
+	g_light = new Light();
 
 	// Loop until the user closes the window
 	while (!glfwWindowShouldClose(g_window)) {

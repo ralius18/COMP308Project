@@ -1,5 +1,7 @@
 #include "light.hpp"
 
+using namespace cgra;
+
 Light::Light(void)
 {
 	lightPos[0] = -500.0f;
@@ -20,7 +22,7 @@ Light::Light(void)
 	glNewList(displayList, GL_COMPILE);
 
 		glColor4f(diffuse[0], diffuse[1], diffuse[2], 1);
-		gluSphere(gluNewQuadric(), 45, 40, 40);
+		cgraSphere(45, 40, 40);
 
 	glEndList();
 }
@@ -37,5 +39,10 @@ void Light::apply()
 
 void Light::render()
 {
+	glColor4f(1, 1, 1, 1);
+
+	glPushMatrix();
+	glTranslatef(lightPos[0], lightPos[1], lightPos[2]);
 	glCallList(displayList);
+	glPopMatrix();
 }

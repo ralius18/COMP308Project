@@ -8,6 +8,8 @@
 #include "math.h"
 #include "geometry.hpp"
 #include "opengl.hpp"
+#include "cgra_geometry.hpp"
+
 
 
 using namespace std;
