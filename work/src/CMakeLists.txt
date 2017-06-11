@@ -13,6 +13,7 @@ SET(headers
 	"geometry.hpp"
 	"light.hpp"
 	"engine.hpp"
+	"geometryMain.hpp"
 )
 
 
@@ -22,6 +23,7 @@ SET(sources
 	"geometry.cpp"
 	"engine.cpp"
 	"light.cpp"
+	"geometryMain.cpp"
 )
 
 # Add executable target and link libraries
