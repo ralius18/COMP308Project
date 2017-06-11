@@ -44,10 +44,19 @@ float g_zfar = 1000.0;
 // Mouse controlled Camera values
 //
 bool g_leftMouseDown = false;
-vec2 g_mousePosition;
+vec2 g_mousePosition = vec2(0, 0);
 float g_pitch = 0;
 float g_yaw = 0;
 float g_zoom = 1.0;
+
+const float mouseXsensitivity = 0.5;
+const float mouseYsensitivity = 0.5;
+
+// Key controlled Camera values
+
+float g_cam_pos_x = 0.0;
+float g_cam_pos_y = 0.0;
+float g_cam_pos_z = 0.0;
 
 // Values and fields to showcase the use of shaders
 // Remove when modifying main.cpp for Assignment 3
@@ -63,12 +72,16 @@ GeometryMain *g_geometryMain = nullptr;
 // Called for mouse movement event on since the last glfwPollEvents
 //
 void cursorPosCallback(GLFWwindow* win, double xpos, double ypos) {
-	// cout << "Mouse Movement Callback :: xpos=" << xpos << "ypos=" << ypos << endl;
+
 	if (g_leftMouseDown) {
-		g_yaw -= g_mousePosition.x - xpos;
-		g_pitch -= g_mousePosition.y - ypos;
+
+		vec2 mouseDiff = vec2(xpos, ypos) - g_mousePosition;
+
+		g_yaw += mouseXsensitivity * mouseDiff.x;
+		g_pitch += mouseYsensitivity * mouseDiff.y;
 	}
 	g_mousePosition = vec2(xpos, ypos);
+	
 }
 
 
@@ -76,7 +89,7 @@ void cursorPosCallback(GLFWwindow* win, double xpos, double ypos) {
 // Called for mouse button event on since the last glfwPollEvents
 //
 void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
-	// cout << "Mouse Button Callback :: button=" << button << "action=" << action << "mods=" << mods << endl;
+	//cout << "Mouse Button Callback :: button=" << button << "action=" << action << "mods=" << mods << endl;
 	if (button == GLFW_MOUSE_BUTTON_LEFT)
 		g_leftMouseDown = (action == GLFW_PRESS);
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
@@ -109,6 +122,16 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	// 	<< "action=" << action << "mods=" << mods << endl;
 	// YOUR CODE GOES HERE
 	// ...
+	if (action == GLFW_PRESS || GLFW_REPEAT) {
+		switch (key) {
+		case GLFW_KEY_W: g_cam_pos_z += 0.5; break;
+		case GLFW_KEY_S: g_cam_pos_z -= 0.5; break;
+		case GLFW_KEY_A: g_cam_pos_x += 0.5; break;
+		case GLFW_KEY_D: g_cam_pos_x -= 0.5; break;
+		case GLFW_KEY_Z: g_cam_pos_y += 0.1; break;
+		case GLFW_KEY_C: g_cam_pos_y -= 0.1; break;
+		}
+	}
 }
 
 
@@ -154,14 +177,24 @@ void setupCamera(int width, int height) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(g_fovy, width / float(height), g_znear, g_zfar);
+	//gluPerspective(g_fovy, g_pitch / float(g_yaw), g_znear, g_zfar);
 
 	// Set up the view part of the model view matrix
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glTranslatef(0, 0, -50 * g_zoom);
+	//float camPos[] = { g_cam_pos_x, g_cam_pos_y, g_cam_pos_z };
+	//float camLook[] = { g_cam_pos_x, g_cam_pos_y, g_cam_pos_z + 1 };
+	//float camUps[] = { 0, 1.0, 0 }; //just ignore this lol, adjusts tilt i think...
+
+	//glTranslatef(0, 0, -50 * g_zoom);
+	//glRotatef(g_pitch, 1, 0, 0);
+	//glRotatef(g_yaw, 0, 1, 0);
+
+	
 	glRotatef(g_pitch, 1, 0, 0);
 	glRotatef(g_yaw, 0, 1, 0);
+	glTranslatef(g_cam_pos_x, g_cam_pos_y, g_cam_pos_z);
 }
 
 

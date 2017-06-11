@@ -88,6 +88,22 @@ void GeometryMain::renderGeometry() {
 	//glBindTexture(GL_TEXTURE_2D, textures[1]);
 	glColor3f(0.6f, 0.2f, 0.0f);
 
+	//Draw floor
+	glBegin(GL_QUADS);
+	for (int z = -10; z <= 10; z += 20) {
+		int x = z;
+		int xdiff = z<0?20:-20;
+		for (; x != z+(2*xdiff); x+=xdiff) {
+			glNormal3f(x, -2, z);
+			int mult = 1;
+			glMultiTexCoord2f(GL_TEXTURE0, x*mult, z*mult);
+			glMultiTexCoord2f(GL_TEXTURE1, x*mult, z*mult);
+			glVertex3f(x, -2, z);
+			//cout << x << " " << z << endl;
+		}
+	}
+	glEnd();
+
 	//Draw all our Geometry's (models/objects)
 	//glColor3f(0.6f, 0.2f, 0.0f); //Metalic Bronze color
 	glPushMatrix();
