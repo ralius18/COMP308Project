@@ -39,8 +39,9 @@ GeometryMain::GeometryMain() {
 GeometryMain::~GeometryMain() { }
 
 void GeometryMain::loadObjects() {
-	objects[0] = new Geometry("../work/res/assets/sphere.obj");
-	objects[1] = new Geometry("../work/res/assets/box.obj");
+	//Args are sting for the file, int for how much the texture spreads on the object
+	objects[0] = new Geometry("../work/res/assets/sphere.obj", 2);
+	objects[1] = new Geometry("../work/res/assets/box.obj", 4);
 }
 
 void GeometryMain::loadTextures() {
@@ -63,7 +64,7 @@ void GeometryMain::loadTextures() {
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	// Use slot 0, need to use GL_TEXTURE1 ... etc if using more than one texture PER OBJECT
-	glActiveTexture(GL_TEXTURE0);
+	//glActiveTexture(GL_TEXTURE0);
 
 	glBindTexture(GL_TEXTURE_2D, textures[0]); // Bind our first texture as a 2D texture
 	// Finnaly, actually fill the data into our texture
@@ -74,35 +75,50 @@ void GeometryMain::loadTextures() {
 }
 
 void GeometryMain::renderGeometry() {
-	
+
+	if (textures_enabled) {
+		// Enable Drawing texures
+		glEnable(GL_TEXTURE_2D);
+		// Use Texture as the color
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		// Set the location for binding the texture
+		glActiveTexture(GL_TEXTURE0);
+		// Bind the texture
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, textures[1]);
+	}
+	else {
+		//Enable using colour as a material.
+		glEnable(GL_COLOR_MATERIAL);
+		glColor3f(0.6f, 0.2f, 0.0f);
+	}
 	//Enable using colour as a material.
 	//glEnable(GL_COLOR_MATERIAL);
 	// Enable Drawing texures
-	glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_TEXTURE_2D);
 	// Use Texture as the color
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	// Set the location for binding the texture
-	glActiveTexture(GL_TEXTURE0);
+	//glActiveTexture(GL_TEXTURE0);
 	// Bind the texture
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	glActiveTexture(GL_TEXTURE1);
+	//glBindTexture(GL_TEXTURE_2D, textures[0]);
+	//glActiveTexture(GL_TEXTURE1);
 	//glBindTexture(GL_TEXTURE_2D, textures[1]);
-	glColor3f(0.6f, 0.2f, 0.0f);
+	//glColor3f(0.6f, 0.2f, 0.0f);
 
 	//Draw floor
 	glBegin(GL_QUADS);
-	int width = 40; //could also be height cause its a square.
-	for (int z = -width/2; z <= width/2; z += width) {
-		int x = z;
-		int xdiff = z<0?width:-width;
-		for (; x != z+(2*xdiff); x+=xdiff) {
-			glNormal3f(x, -2, z);
-			int mult = 1;
-			glMultiTexCoord2f(GL_TEXTURE0, x*mult, z*mult);
-			glMultiTexCoord2f(GL_TEXTURE1, x*mult, z*mult);
-			glVertex3f(x, -2, z);
-			//cout << x << " " << z << endl;
-		}
+	float sqXs[4] = { -1, 1, 1,-1 };
+	float sqZs[4] = { -1,-1, 1, 1 };
+	int size = 20; //Half the length or width of the square
+	int textureSpread = 1; //How much the texture repeats itself over the square.
+	for (int i = 0; i < 4; i++) {
+		glNormal3f(sqXs[i] * size, -2, sqZs[i] * size);
+		glTexCoord2f(sqXs[i] * textureSpread, sqZs[i] * textureSpread);
+		//glMultiTexCoord2f(GL_TEXTURE0, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
+		//glMultiTexCoord2f(GL_TEXTURE1, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
+		glVertex3f(sqXs[i] * size, -2, sqZs[i] * size);
 	}
 	glEnd();
 
@@ -117,9 +133,18 @@ void GeometryMain::renderGeometry() {
 
 
 	// Cleanup
-	glPopMatrix();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glDisable(GL_TEXTURE_2D);
-	//glDisable(GL_COLOR_MATERIAL);
+	if (textures_enabled) {
+		glPopMatrix();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_TEXTURE_2D);
+	}
+	else {
+		glDisable(GL_COLOR_MATERIAL);
+	}
+}
+
+void GeometryMain::toggleTextures() {
+	textures_enabled = !textures_enabled;
+	cout << "Textures are: " + textures_enabled ? "Enabled" : "Disabled";
 }

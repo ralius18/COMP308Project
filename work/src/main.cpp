@@ -125,25 +125,21 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	// YOUR CODE GOES HERE
 	// ...
 	if (action == GLFW_PRESS || GLFW_REPEAT) {
-		float yRotRad;
+		float yRotRad = radians(g_yaw);
 		float speed = 0.5;
 		if (key == GLFW_KEY_W) {
-			yRotRad = (g_yaw / 180 * math::pi());
 			g_cam_x -= sin(yRotRad) * speed;
 			g_cam_z += cos(yRotRad) * speed;
 		}
 		if (key == GLFW_KEY_S) {
-			yRotRad = (g_yaw / 180 * math::pi());
 			g_cam_x += sin(yRotRad) * speed;
 			g_cam_z -= cos(yRotRad) * speed;
 		}
 		if (key == GLFW_KEY_A) {
-			yRotRad = (g_yaw / 180 * math::pi());
 			g_cam_x += cos(yRotRad) * speed;
 			g_cam_z += sin(yRotRad) * speed;
 		}
 		if (key == GLFW_KEY_D) {
-			yRotRad = (g_yaw / 180 * math::pi());
 			g_cam_x -= cos(yRotRad) * speed;
 			g_cam_z -= sin(yRotRad) * speed;
 		}
@@ -152,6 +148,9 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 		}
 		if (key == GLFW_KEY_LEFT_CONTROL) {
 			g_cam_y += speed;
+		}
+		if (key == GLFW_KEY_T) {
+			g_geometryMain->toggleTextures();
 		}
 	}
 }

@@ -27,10 +27,9 @@
 using namespace std;
 using namespace cgra;
 
-int texturesSize;
-GLuint *textures;
+Geometry::Geometry(string filename, int textureSpread) {
+	txtrSprd = textureSpread;
 
-Geometry::Geometry(string filename) {
 	m_filename = filename;
 	readOBJ(filename);
 	if (m_triangles.size() > 0) {
@@ -279,10 +278,9 @@ void Geometry::createDisplayList(){
 			//UVs
 			x = m_uvs[currentSquare.v[j].t].x;
 			y = m_uvs[currentSquare.v[j].t].y;
-			int mult = 4; //multiplier, spreads out the texture on each face.
-			//glTexCoord2f(x * mult, y * mult);
-			glMultiTexCoord2f(GL_TEXTURE0, x*mult, y*mult);
-			glMultiTexCoord2f(GL_TEXTURE1, x*mult, y*mult);
+			glTexCoord2f(x * txtrSprd, y * txtrSprd);
+			//glMultiTexCoord2f(GL_TEXTURE0, x*txtrSprd, y*txtrSprd);
+			//glMultiTexCoord2f(GL_TEXTURE1, x*txtrSprd, y*txtrSprd);
 
 			//points
 			x = m_points[currentSquare.v[j].p].x;

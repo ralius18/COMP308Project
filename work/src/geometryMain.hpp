@@ -29,6 +29,8 @@ private:
 	Geometry **objects = new Geometry*[2];
 	enum objectNames { sphere, box };
 
+	bool textures_enabled = false;
+
 	void loadObjects();
 	void loadTextures();
 
@@ -37,4 +39,5 @@ public:
 	~GeometryMain();
 
 	void renderGeometry();
+	void toggleTextures();
 };

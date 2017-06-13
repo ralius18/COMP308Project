@@ -61,8 +61,10 @@ private:
 	//A new method to clean up repeated code.
 	void createDisplayList();
 
+	int txtrSprd = 1; // How much the texture is spread amongst the object.
+
 public:
-	Geometry(std::string);
+	Geometry(std::string, int textureSpread);
 	~Geometry();
 
 	void renderGeometry();
