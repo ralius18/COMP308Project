@@ -51,7 +51,7 @@ void GeometryMain::loadTextures() {
 	//Load in images
 	Image texBrick("../work/res/textures/brick.jpg");
 	Image texWood("../work/res/textures/wood.jpg");
-
+	
 	//Generate our textures array.
 	glGenTextures(texturesSize, textures); // Generate texture IDs
 

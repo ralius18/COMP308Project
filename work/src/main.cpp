@@ -37,7 +37,7 @@ GLFWwindow* g_window;
 
 // Projection values
 // 
-float g_fovy = 20.0;
+float g_fovy = 75.0;
 float g_znear = 0.1;
 float g_zfar = 1000.0;
 
@@ -243,7 +243,7 @@ void render(int width, int height) {
 	if (!g_useShader) {
 
 		glPushMatrix();
-			g_geometryMain->renderGeometry();
+			//g_geometryMain->renderGeometry();
 			g_engine->render();
 		glPopMatrix(); //To keep things tidy.
 
@@ -386,7 +386,8 @@ int main(int argc, char **argv) {
 
 	g_geometryMain = new GeometryMain();
 
-	g_engine = new Engine();
+	g_engine = new Engine(*g_geometryMain, g_window);
+
 
 	cout << "--WASD for camera movement." << endl;
 	cout << "--Left click for camera rotation." << endl;

@@ -1,26 +1,28 @@
 #pragma once
 
 #include "light.hpp"
+#include "geometryMain.hpp"
+
 
 class Engine
 {
 public:
-	Engine();
+	Engine(GeometryMain, GLFWwindow*);
 
 	void mainLoop();
 	void render();
 	void run();
+	void update();
 
 	static Engine* engine;
+	GeometryMain* geometryMain;
+	GLFWwindow* window;
 
 	Light* light;
 
+	//offscreen rendering
 	bool shaderSupported;
 	GLhandleARB shader;
-
-	//Frame-buffer object
-	bool fboSupported;
-	bool fboUsed;
 
 	float uniformLightX;
 	float uniformLightY;
@@ -28,26 +30,21 @@ public:
 	float uniformDecay;
 	float uniformDensity;
 	float uniformWeight;
-	GLuint fboId;
 
 private:
 	short gameOn;
-	void update();
 	
 	void getLightScreenCoord();
 
-	unsigned int glsl_loc_light;
-	unsigned int glsl_loc_exposure;
-	unsigned int glsl_loc_decay;
-	unsigned int glsl_loc_density;
-	unsigned int glsl_loc_weight;
-	unsigned int glsl_loc_texture;
+	unsigned int localLight;
+	unsigned int localExposure;
+	unsigned int localDecay;
+	unsigned int localDensity;
+	unsigned int localWeight;
+	unsigned int localTexture;
 
 	void createScreenCopyTexture();
 	GLuint screenCopyTextureId;
 	void copyFrameBufferToTexture();
 
-	//FBO
-	void generateFBO();
-	GLuint fboTextureId;
 };
