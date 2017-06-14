@@ -381,7 +381,7 @@ int main(int argc, char **argv) {
 	// YOUR CODE GOES HERE
 	// ...
 	initLight();
-	initShader();
+	//initShader();
 
 	g_geometryMain = new GeometryMain();
 

@@ -91,7 +91,7 @@ void GeometryMain::renderGeometry() {
 	else {
 		//Enable using colour as a material.
 		glEnable(GL_COLOR_MATERIAL);
-		glColor3f(0.6f, 0.2f, 0.0f);
+		//glColor3f(0.6f, 0.2f, 0.0f);
 	}
 	//Enable using colour as a material.
 	//glEnable(GL_COLOR_MATERIAL);
@@ -146,5 +146,5 @@ void GeometryMain::renderGeometry() {
 
 void GeometryMain::toggleTextures() {
 	textures_enabled = !textures_enabled;
-	cout << "Textures are: " + textures_enabled ? "Enabled" : "Disabled";
+	//cout << "Textures are: " + textures_enabled ? "Enabled" : "Disabled";
 }
