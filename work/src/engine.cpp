@@ -55,6 +55,29 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 
 	createScreenCopyTexture();
 
+	m_nSamples = 3;		// Number of sample rays to use in integral equation
+	m_Kr = 0.0025f;		// Rayleigh scattering constant
+	m_Kr4PI = m_Kr*4.0f*PI;
+	m_Km = 0.0010f;		// Mie scattering constant
+	m_Km4PI = m_Km*4.0f*PI;
+	m_ESun = 20.0f;		// Sun brightness constant
+	m_g = -0.990f;		// The Mie phase asymmetry factor
+	m_fExposure = 2.0f;
+
+	m_fInnerRadius = 10.0f;
+	m_fOuterRadius = 10.25f;
+	m_fScale = 1 / (m_fOuterRadius - m_fInnerRadius);
+
+	m_fWavelength[0] = 0.650f;		// 650 nm for red
+	m_fWavelength[1] = 0.570f;		// 570 nm for green
+	m_fWavelength[2] = 0.475f;		// 475 nm for blue
+	m_fWavelength4[0] = powf(m_fWavelength[0], 4.0f);
+	m_fWavelength4[1] = powf(m_fWavelength[1], 4.0f);
+	m_fWavelength4[2] = powf(m_fWavelength[2], 4.0f);
+
+	m_fRayleighScaleDepth = 0.25f;
+	m_fMieScaleDepth = 0.1f;
+
 	shaderSupported = true;
 	if (shaderSupported) {
 		//TODO: this stuff
@@ -88,6 +111,7 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 		cout << "Weight: " << localWeight << endl;
 		cout << "Texture: " << localTexture << endl;
 		*/
+		GLuint atmosshader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/GroundFromAtmosphere.vert", "../work/res/shaders/GroundFromAtmosphere.frag" });
 	}
 
 
