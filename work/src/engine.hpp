@@ -45,10 +45,10 @@ public:
 	float m_fWavelength4[3];
 	float m_fRayleighScaleDepth;
 	float m_fMieScaleDepth;
-	CPixelBuffer m_pbOpticalDepth;
+	//CPixelBuffer m_pbOpticalDepth;
 
-	CShaderObject m_shSkyFromSpace;
-	CShaderObject m_shSkyFromAtmosphere;
+	//CShaderObject m_shSkyFromSpace;
+	//CShaderObject m_shSkyFromAtmosphere;
 private:
 	short gameOn;
 	
