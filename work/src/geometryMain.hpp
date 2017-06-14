@@ -30,6 +30,7 @@ private:
 	enum objectNames { sphere, box };
 
 	bool textures_enabled = false;
+	bool color_enabled = true;
 
 	void loadObjects();
 	void loadTextures();
@@ -40,4 +41,5 @@ public:
 
 	void renderGeometry();
 	void toggleTextures();
+	void toggleColor();
 };
