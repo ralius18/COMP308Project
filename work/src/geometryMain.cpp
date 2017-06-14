@@ -163,6 +163,12 @@ void GeometryMain::toggleTextures() {
 
 void GeometryMain::toggleColor() {
 	color_enabled = !color_enabled;
-	if (color_enabled) cout << "Colors are: Enabled" << endl;
-	else cout << "Colors are: Disabled" << endl;
+	//if (color_enabled) cout << "Colors are: Enabled" << endl;
+	//else cout << "Colors are: Disabled" << endl;
+}
+
+//Set to true to load in color, false else (everything black).
+void GeometryMain::setColorOn(bool b) {
+	color_enabled = b;
+	//cout << "" << endl;
 }
