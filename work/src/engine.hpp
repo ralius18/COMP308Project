@@ -31,6 +31,24 @@ public:
 	float uniformDensity;
 	float uniformWeight;
 
+	float m_Kr, m_Kr4PI;
+	float m_Km, m_Km4PI;
+	float m_ESun;
+	float m_g;
+	float m_fExposure;
+
+
+	float m_fInnerRadius;
+	float m_fOuterRadius;
+	float m_fScale;
+	float m_fWavelength[3];
+	float m_fWavelength4[3];
+	float m_fRayleighScaleDepth;
+	float m_fMieScaleDepth;
+	CPixelBuffer m_pbOpticalDepth;
+
+	CShaderObject m_shSkyFromSpace;
+	CShaderObject m_shSkyFromAtmosphere;
 private:
 	short gameOn;
 	
