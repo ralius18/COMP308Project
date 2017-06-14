@@ -52,7 +52,7 @@ void GeometryMain::loadTextures() {
 	//Load in images
 	Image texBrick("../work/res/textures/brick.jpg");
 	Image texWood("../work/res/textures/wood.jpg");
-	
+
 	//Generate our textures array.
 	glGenTextures(texturesSize, textures); // Generate texture IDs
 
@@ -85,14 +85,15 @@ void GeometryMain::renderGeometry() {
 		glActiveTexture(GL_TEXTURE0);
 		// Bind the texture
 		glBindTexture(GL_TEXTURE_2D, textures[0]);
-		//glActiveTexture(GL_TEXTURE1);
-		//glBindTexture(GL_TEXTURE_2D, textures[1]);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, textures[1]);
+		glActiveTexture(GL_TEXTURE0);
 	}
-	else {
-		//Enable using colour as a material.
-		glEnable(GL_COLOR_MATERIAL);
-		//glColor3f(0.6f, 0.2f, 0.0f);
-	}
+	//Enable using colour as a material.
+	glEnable(GL_COLOR_MATERIAL);
+	//Default color used when color is disabled (color_enabled == false)
+	glColor3f(0, 0, 0);
+	
 	//Enable using colour as a material.
 	//glEnable(GL_COLOR_MATERIAL);
 	// Enable Drawing texures
@@ -111,24 +112,35 @@ void GeometryMain::renderGeometry() {
 	glBegin(GL_QUADS);
 	float sqXs[4] = { -1, 1, 1,-1 };
 	float sqZs[4] = { -1,-1, 1, 1 };
-	int size = 20; //Half the length or width of the square
+	int size = 20; //Half the length (or width) of the square
 	int textureSpread = 1; //How much the texture repeats itself over the square.
+
+	if (color_enabled) {
+		glColor3f(0.3f, 0.3f, 0.3f);
+	}
+
 	for (int i = 0; i < 4; i++) {
 		glNormal3f(sqXs[i] * size, -2, sqZs[i] * size);
-		glTexCoord2f(sqXs[i] * textureSpread, sqZs[i] * textureSpread);
-		//glMultiTexCoord2f(GL_TEXTURE0, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
-		//glMultiTexCoord2f(GL_TEXTURE1, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
+		if (textures_enabled) {
+			glBindTexture(GL_TEXTURE_2D, textures[0]);
+			glTexCoord2f(sqXs[i] * textureSpread, sqZs[i] * textureSpread);
+			//glMultiTexCoord2f(GL_TEXTURE1, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
+			//glMultiTexCoord2f(GL_TEXTURE2, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
 		glVertex3f(sqXs[i] * size, -2, sqZs[i] * size);
 	}
 	glEnd();
 
 	//Draw all our Geometry's (models/objects)
-	//glColor3f(0.6f, 0.2f, 0.0f); //Metalic Bronze color
 	glPushMatrix();
-	//glTranslatef(0.0f, -1.0f, 0.0f);
+	if (color_enabled)
+		glColor3f(0.6f, 0.2f, 0.0f); //Metalic Bronze color
 	objects[sphere]->renderGeometry();
 
 	glTranslatef(10, 0, -10);
+	if (color_enabled)
+		glColor3f(0.4f, 0.0f, 0.0f); //Dark Red
 	objects[box]->renderGeometry();
 
 
@@ -139,12 +151,24 @@ void GeometryMain::renderGeometry() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable(GL_TEXTURE_2D);
 	}
-	else {
-		glDisable(GL_COLOR_MATERIAL);
-	}
+	glDisable(GL_COLOR_MATERIAL);
+	glColor3f(0, 0, 0);
 }
 
 void GeometryMain::toggleTextures() {
 	textures_enabled = !textures_enabled;
-	//cout << "Textures are: " + textures_enabled ? "Enabled" : "Disabled";
+	if(textures_enabled) cout << "Textures are: Enabled" << endl;
+	else cout << "Textures are: Disabled" << endl;
+}
+
+void GeometryMain::toggleColor() {
+	color_enabled = !color_enabled;
+	//if (color_enabled) cout << "Colors are: Enabled" << endl;
+	//else cout << "Colors are: Disabled" << endl;
+}
+
+//Set to true to load in color, false else (everything black).
+void GeometryMain::setColorOn(bool b) {
+	color_enabled = b;
+	//cout << "" << endl;
 }
