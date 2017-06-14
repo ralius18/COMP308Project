@@ -57,7 +57,7 @@ const float mouseYsensitivity = 0.5;
 
 float g_cam_x = 0.0;
 float g_cam_y = 0.0;
-float g_cam_z = 0.0;
+float g_cam_z = -20.0;
 
 // Values and fields to showcase the use of shaders
 // Remove when modifying main.cpp for Assignment 3
@@ -149,9 +149,12 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 		if (key == GLFW_KEY_LEFT_CONTROL) {
 			g_cam_y += speed;
 		}
-		if (key == GLFW_KEY_T) {
+	}
+	if(action == GLFW_RELEASE) {
+		if(key == GLFW_KEY_T)
 			g_geometryMain->toggleTextures();
-		}
+		//if (key == GLFW_KEY_Y)
+			//g_geometryMain->toggleColor();
 	}
 }
 

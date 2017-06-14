@@ -6,7 +6,7 @@ Light::Light(void)
 {
 	lightPos[0] = -500.0f;
 	lightPos[1] = 500.0f;
-	lightPos[2] = 0.0f;
+	lightPos[2] = 1.0f;
 	lightPos[3] = 1.0f;
 
 	diffuse[0] = 1.0f;

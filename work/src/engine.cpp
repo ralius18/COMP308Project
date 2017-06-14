@@ -8,8 +8,10 @@
 #include "engine.hpp"
 #include "math.h"
 #include "geometry.hpp"
+#include "simple_shader.hpp"
 
 using namespace std;
+using namespace cgra;
 
 Engine* Engine::engine;
 
@@ -44,29 +46,39 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 
 	createScreenCopyTexture();
 
+	shaderSupported = true;
 	if (shaderSupported) {
 		//TODO: this stuff
 
-		shader = glCreateProgramObjectARB();
+		GLuint shader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/vert_simpleTexture.glsl", "../work/res/shaders/frag_simpleTexture.glsl" });
 
+		glUseProgram(shader);
+			
 		uniformExposure = 0.0034f;
 		uniformDecay = 1.0f;
 		uniformDensity = 0.84f;
 		uniformWeight = 5.65f;
 
-		localExposure = 0.0034f;
-		localDecay = 1.0f;
-		localDensity = 0.84f;
-		localWeight = 5.65f;
-
+		localLight = glGetUniformLocation(shader, "lightPositionOnScreen");
+		glUniform2f(localLight, uniformLightX, uniformLightY);
+		localExposure = glGetUniformLocation(shader, "exposure");
+		glUniform1f(localExposure, uniformExposure);
+		localDecay = glGetUniformLocation(shader, "decay");
+		glUniform1f(localDecay, uniformDecay);
+		localDensity = glGetUniformLocation(shader, "density");
+		glUniform1f(localDensity, uniformDensity);
+		localWeight = glGetUniformLocation(shader, "weight");
+		glUniform1f(localWeight, uniformWeight);
+		localTexture = glGetUniformLocation(shader, "myTexture");
+		glUniform1f(localTexture, screenCopyTextureId);
 		/*
-		glUniform2fARB(localLight, uniformLightX, uniformLightY);
-		glUniform1fARB(localExposure, uniformExposure);
-		glUniform1fARB(localDecay, uniformDecay);
-		glUniform1fARB(localDensity, uniformDensity);
-		glUniform1fARB(localWeight, uniformWeight);
-		glUniform1iARB(localTexture, screenCopyTextureId);*/
-
+		cout << "Light: " << localLight << endl;
+		cout << "Exposure: " << localExposure << endl;
+		cout << "Decay: " << localDecay << endl;
+		cout << "Density: " << localDensity << endl;
+		cout << "Weight: " << localWeight << endl;
+		cout << "Texture: " << localTexture << endl;
+		*/
 	}
 
 
@@ -93,37 +105,48 @@ void Engine::render()
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	glColor4f(0, 1, 1, 1);
+	glColor4f(1, 1, 1, 1);
 
 	glViewport(0, 0, renderWidth / OFF_SCREEN_RENDER_RATIO, renderHeight / OFF_SCREEN_RENDER_RATIO);
 
 	glDisable(GL_TEXTURE9);
 	glPushMatrix();
-		glTranslatef(light->lightPos[0], light->lightPos[1], light->lightPos[2]);
-		light->render();
+		glEnable(GL_COLOR_MATERIAL);
+			glTranslatef(light->lightPos[0], light->lightPos[1], light->lightPos[2]);
+			light->render();
+		glDisable(GL_COLOR_MATERIAL);
 	glPopMatrix();
 
 	getLightScreenCoord();
 	
+	//STEP 1 ------------------------
 	//Draw objects black with light
-	glUseProgramObjectARB(0);
-
-	//glEnable(GL_TEXTURE9);
-	glDisable(GL_TEXTURE9);
+	glUseProgram(0);
+	
+	glEnable(GL_TEXTURE9);
 	glColor4f(0, 0, 0, 1);
 	glPushMatrix();
 		geometryMain->renderGeometry();
 	glPopMatrix();
+	
 
 	copyFrameBufferToTexture();
-	/*
+	
+	glViewport(0, 0, renderWidth, renderHeight);
+	glEnable(GL_TEXTURE9);
+	
+	//STEP 2 ------------------------
 	//Draw scene with no light scattering
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glColor4f(1, 1, 1, 1);
 	glPushMatrix();
+		geometryMain->toggleTextures(); //true
 		geometryMain->renderGeometry();
-	glPopMatrix();
+		geometryMain->toggleTextures(); //false
+	glPopMatrix(); 
 	
+	/*
+	//STEP 3 ------------------------
 	//Paint light scattering effect
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -132,14 +155,20 @@ void Engine::render()
 	glLoadIdentity();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	glActiveTextureARB(GL_TEXTURE9_ARB);
+	glActiveTexture(GL_TEXTURE9);
 	glBindTexture(GL_TEXTURE9, screenCopyTextureId);
 
+	glUseProgram(shader);
+	glUniform2f(localLight, uniformLightX, uniformLightY);
+	glUniform1f(localExposure, uniformExposure);
+	glUniform1f(localDecay, uniformDecay);
+	glUniform1f(localDensity, uniformDensity);
+	glUniform1f(localWeight, uniformWeight);
+	glUniform1i(localTexture, 0);
 
 	glEnable(GL_TEXTURE9);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
 	
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 0);
@@ -154,8 +183,11 @@ void Engine::render()
 		glTexCoord2f(0, 1);
 		glVertex2f(-renderWidth / 2, renderHeight / 2);
 	glEnd();
-	*/
-	glUseProgramObjectARB(0);
+	
+	glDisable(GL_BLEND);*/
+	glDisable(GL_TEXTURE9);
+	
+	glUseProgram(0);
 }
 
 void Engine::getLightScreenCoord() 
@@ -174,10 +206,17 @@ void Engine::getLightScreenCoord()
 	GLdouble windowY = 0;
 	GLdouble windowZ = 0;
 
-	gluProject(light->lightPos[0], light->lightPos[1], light->lightPos[2], modelview, proj, viewport, &windowX, &windowY, &windowZ);
+	GLint projectResult = gluProject(light->lightPos[0], light->lightPos[1], light->lightPos[2], modelview, proj, viewport, &windowX, &windowY, &windowZ);
+	
+	//if (projectResult == GL_TRUE)
+		//cout << "Project Successful" << endl;
+	//else
+		//cout << "Project Failure" << endl;
 
 	uniformLightX = windowX / ((float)renderWidth / OFF_SCREEN_RENDER_RATIO);
-	uniformLightY = windowY / ((float)renderWidth / OFF_SCREEN_RENDER_RATIO);
+	uniformLightY = windowY / ((float)renderHeight / OFF_SCREEN_RENDER_RATIO);
+
+	//cout << "Light Position: winX=" << windowX << " winY" << windowY << " x=" << uniformLightX << " y=" << uniformLightY << endl;
 }
 
 void Engine::createScreenCopyTexture()
@@ -188,7 +227,7 @@ void Engine::createScreenCopyTexture()
 	char* emptyData = (char*)malloc(width * height * 3 * sizeof(char)); //allocate memory for textures
 	memset(emptyData, 0, width * height * 3 * sizeof(char)); //set memory
 
-	glActiveTextureARB(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE9);
 	glGenTextures(1, &screenCopyTextureId);
 	glBindTexture(GL_TEXTURE9, screenCopyTextureId);	//bind texture name
 	glTexImage2D(GL_TEXTURE9, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, emptyData); //specify texture

@@ -22,7 +22,7 @@ public:
 
 	//offscreen rendering
 	bool shaderSupported;
-	GLhandleARB shader;
+	GLuint shader;
 
 	float uniformLightX;
 	float uniformLightY;
