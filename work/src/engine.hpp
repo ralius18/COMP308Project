@@ -31,6 +31,7 @@ public:
 	float uniformDensity;
 	float uniformWeight;
 
+	int m_nSamples;
 	float m_Kr, m_Kr4PI;
 	float m_Km, m_Km4PI;
 	float m_ESun;
