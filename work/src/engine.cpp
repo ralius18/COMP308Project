@@ -18,6 +18,7 @@ Engine* Engine::engine;
 #define renderWidth 640
 #define renderHeight 480
 #define OFF_SCREEN_RENDER_RATIO 1
+#define PI 3.141
 
 Engine::Engine(GeometryMain gm, GLFWwindow* window)
 {
