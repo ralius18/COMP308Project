@@ -95,6 +95,7 @@ void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
 	//cout << "Mouse Button Callback :: button=" << button << "action=" << action << "mods=" << mods << endl;
 	if (button == GLFW_MOUSE_BUTTON_LEFT)
 		g_leftMouseDown = (action == GLFW_PRESS);
+	/*
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
 		if (g_useShader) {
 			g_useShader = false;
@@ -104,7 +105,7 @@ void mouseButtonCallback(GLFWwindow *win, int button, int action, int mods) {
 			g_useShader = true;
 			cout << "Using a shader" << endl;
 		}
-	}
+	}*/
 }
 
 
