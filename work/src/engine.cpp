@@ -102,6 +102,7 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 		cout << "Weight: " << localWeight << endl;
 		cout << "Texture: " << localTexture << endl;
 		*/
+		GLuint atmosshader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/GroundFromAtmosphere.vert", "../work/res/shaders/GroundFromAtmosphere.frag" });
 	}
 
 
