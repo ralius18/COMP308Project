@@ -50,6 +50,10 @@ public:
 
 	//CShaderObject m_shSkyFromSpace;
 	//CShaderObject m_shSkyFromAtmosphere;
+	//CShaderObject m_shGroundFromSpace;
+	//CShaderObject m_shGroundFromAtmosphere;
+	//CShaderObject m_shSpaceFromSpace;
+	//CShaderObject m_shSpaceFromAtmosphere;
 private:
 	short gameOn;
 	
