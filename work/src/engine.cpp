@@ -17,8 +17,9 @@ Engine* Engine::engine;
 
 #define renderWidth 640
 #define renderHeight 480
-#define OFF_SCREEN_RENDER_RATIO 1
-#define PI 3.141
+#define OFF_SCREEN_RENDER_RATIO 2
+
+#define PI 3.14159
 
 Engine::Engine(GeometryMain gm, GLFWwindow* window)
 {
@@ -31,13 +32,22 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
+	//GLfloat fogColor[4] = { 0.2f ,0.2f ,0.28f ,1.0f };
+	//Set fog 
+	//glFogi(GL_FOG_MODE, GL_LINEAR);		// Fog Mode
+	//glFogfv(GL_FOG_COLOR, fogColor);			// Set Fog Color
+	//glFogf(GL_FOG_DENSITY, 0.20f);				// How Dense Will The Fog Be
+	//glHint(GL_FOG_HINT, GL_FASTEST);			// Fog Hint Value
+	//glFogf(GL_FOG_START, 7000.0f);				// Fog Start Depth
+	//glFogf(GL_FOG_END, 10000.0f);				// Fog End Depth
+	//glEnable(GL_FOG);
+	//End fog
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	engine = this;
-
-	shaderSupported = false;
 
 	light = new Light();
 
@@ -74,7 +84,7 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 	if (shaderSupported) {
 		//TODO: this stuff
 
-		GLuint shader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/vert_simpleTexture.glsl", "../work/res/shaders/frag_simpleTexture.glsl" });
+		shader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/vert_simpleTexture.vert", "../work/res/shaders/frag_simpleTexture.frag" });
 
 		glUseProgram(shader);
 			
@@ -128,6 +138,9 @@ void Engine::update()
 
 void Engine::render()
 {
+
+	geometryMain->setColorOn(false);
+
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	glColor4f(1, 1, 1, 1);
@@ -143,6 +156,7 @@ void Engine::render()
 	glPopMatrix();
 
 	getLightScreenCoord();
+	
 	
 	//STEP 1 ------------------------
 	//Draw objects black with light
@@ -168,8 +182,8 @@ void Engine::render()
 		geometryMain->toggleTextures(); //true
 		geometryMain->renderGeometry();
 		geometryMain->toggleTextures(); //false
-	glPopMatrix(); 
-	
+	glPopMatrix();
+	glColor4f(1, 1, 1, 1);
 	/*
 	//STEP 3 ------------------------
 	//Paint light scattering effect
@@ -180,11 +194,12 @@ void Engine::render()
 	glLoadIdentity();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	glActiveTexture(GL_TEXTURE9);
+	glActiveTexture(GL_TEXTURE8);
 	glBindTexture(GL_TEXTURE9, screenCopyTextureId);
 
+	//update values
 	glUseProgram(shader);
-	glUniform2f(localLight, uniformLightX, uniformLightY);
+	glUniform2f(localLight, uniformLightX, uniformLightY); //mostly just this one
 	glUniform1f(localExposure, uniformExposure);
 	glUniform1f(localDecay, uniformDecay);
 	glUniform1f(localDensity, uniformDensity);
@@ -196,23 +211,26 @@ void Engine::render()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0);
+		glTexCoord2f(0, 0);
 		glVertex2f(-renderWidth / 2, -renderHeight / 2);
 
 		glTexCoord2f(1, 0);
 		glVertex2f(renderWidth / 2, -renderHeight / 2);
-
+		
 		glTexCoord2f(1, 1);
 		glVertex2f(renderWidth / 2, renderHeight / 2);
 
 		glTexCoord2f(0, 1);
 		glVertex2f(-renderWidth / 2, renderHeight / 2);
 	glEnd();
-	
-	glDisable(GL_BLEND);*/
-	glDisable(GL_TEXTURE9);
-	
+
 	glUseProgram(0);
+	
+	//glDisable(GL_BLEND);
+	//glDisable(GL_TEXTURE9);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_LIGHTING);*/
+	
 }
 
 void Engine::getLightScreenCoord() 
@@ -249,10 +267,10 @@ void Engine::createScreenCopyTexture()
 	int width = renderWidth;
 	int height = renderHeight;
 
-	char* emptyData = (char*)malloc(width * height * 3 * sizeof(char)); //allocate memory for textures
+	char* emptyData = (char*)malloc(width * height * 3 * sizeof(char)); //allocate memory for textures (*3 for rgb)
 	memset(emptyData, 0, width * height * 3 * sizeof(char)); //set memory
 
-	glActiveTexture(GL_TEXTURE9);
+	glActiveTexture(GL_TEXTURE8);
 	glGenTextures(1, &screenCopyTextureId);
 	glBindTexture(GL_TEXTURE9, screenCopyTextureId);	//bind texture name
 	glTexImage2D(GL_TEXTURE9, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, emptyData); //specify texture
