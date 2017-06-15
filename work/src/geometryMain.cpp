@@ -122,11 +122,11 @@ void GeometryMain::renderGeometry() {
 	for (int i = 0; i < 4; i++) {
 		glNormal3f(sqXs[i] * size, -2, sqZs[i] * size);
 		if (textures_enabled) {
-			glBindTexture(GL_TEXTURE_2D, textures[0]);
-			glTexCoord2f(sqXs[i] * textureSpread, sqZs[i] * textureSpread);
-			//glMultiTexCoord2f(GL_TEXTURE1, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
-			//glMultiTexCoord2f(GL_TEXTURE2, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
-			glBindTexture(GL_TEXTURE_2D, 0);
+			//glBindTexture(GL_TEXTURE_2D, textures[0]);
+			//glTexCoord2f(sqXs[i] * textureSpread, sqZs[i] * textureSpread);
+			glMultiTexCoord2f(GL_TEXTURE0, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
+			glMultiTexCoord2f(GL_TEXTURE1, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
+			//glBindTexture(GL_TEXTURE_2D, 0);
 		}
 		glVertex3f(sqXs[i] * size, -2, sqZs[i] * size);
 	}
@@ -143,13 +143,16 @@ void GeometryMain::renderGeometry() {
 		glColor3f(0.4f, 0.0f, 0.0f); //Dark Red
 	objects[box]->renderGeometry();
 
-
 	// Cleanup
+	glPopMatrix();
 	if (textures_enabled) {
-		glPopMatrix();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		//clearing all the gl_textures that i've used
+		for (int i = 0; i <= 1; i++) {
+			glActiveTexture(GL_TEXTURE0+i);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
 		glDisable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE0);
 	}
 	glDisable(GL_COLOR_MATERIAL);
 	glColor3f(0, 0, 0);
@@ -157,8 +160,8 @@ void GeometryMain::renderGeometry() {
 
 void GeometryMain::toggleTextures() {
 	textures_enabled = !textures_enabled;
-	//if(textures_enabled) cout << "Textures are: Enabled" << endl;
-	//else cout << "Textures are: Disabled" << endl;
+	if(textures_enabled) cout << "Textures are: Enabled" << endl;
+	else cout << "Textures are: Disabled" << endl;
 }
 
 void GeometryMain::toggleColor() {

@@ -154,8 +154,8 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	if(action == GLFW_RELEASE) {
 		if(key == GLFW_KEY_T)
 			g_geometryMain->toggleTextures();
-		//if (key == GLFW_KEY_Y)
-			//g_geometryMain->toggleColor();
+		if (key == GLFW_KEY_Y)
+			g_geometryMain->toggleColor();
 	}
 }
 
@@ -201,20 +201,10 @@ void setupCamera(int width, int height) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(g_fovy, width / float(height), g_znear, g_zfar);
-	//gluPerspective(g_fovy, g_pitch / float(g_yaw), g_znear, g_zfar);
 
 	// Set up the view part of the model view matrix
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
-	//float camPos[] = { g_cam_pos_x, g_cam_pos_y, g_cam_pos_z };
-	//float camLook[] = { g_cam_pos_x, g_cam_pos_y, g_cam_pos_z + 1 };
-	//float camUps[] = { 0, 1.0, 0 }; //just ignore this lol, adjusts tilt i think...
-
-	//glTranslatef(0, 0, -50 * g_zoom);
-	//glRotatef(g_pitch, 1, 0, 0);
-	//glRotatef(g_yaw, 0, 1, 0);
-
 	
 	glRotatef(g_pitch, 1, 0, 0);
 	glRotatef(g_yaw, 0, 1, 0);
