@@ -66,6 +66,4 @@ private:
 	GLuint screenCopyTextureId;
 	void copyFrameBufferToTexture();
 
-	void initShaders();
-
 };

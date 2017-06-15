@@ -19,6 +19,8 @@ Engine* Engine::engine;
 #define renderHeight 480
 #define OFF_SCREEN_RENDER_RATIO 2
 
+#define PI 3.14159
+
 Engine::Engine(GeometryMain gm, GLFWwindow* window)
 {
 	glClearColor(0.2, 0.2, 0.28, 1);
@@ -30,15 +32,15 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
-	GLfloat fogColor[4] = { 0.2f ,0.2f ,0.28f ,1.0f };
+	//GLfloat fogColor[4] = { 0.2f ,0.2f ,0.28f ,1.0f };
 	//Set fog 
-	glFogi(GL_FOG_MODE, GL_LINEAR);		// Fog Mode
-	glFogfv(GL_FOG_COLOR, fogColor);			// Set Fog Color
-	glFogf(GL_FOG_DENSITY, 0.20f);				// How Dense Will The Fog Be
-	glHint(GL_FOG_HINT, GL_FASTEST);			// Fog Hint Value
-	glFogf(GL_FOG_START, 7000.0f);				// Fog Start Depth
-	glFogf(GL_FOG_END, 10000.0f);				// Fog End Depth
-	glEnable(GL_FOG);
+	//glFogi(GL_FOG_MODE, GL_LINEAR);		// Fog Mode
+	//glFogfv(GL_FOG_COLOR, fogColor);			// Set Fog Color
+	//glFogf(GL_FOG_DENSITY, 0.20f);				// How Dense Will The Fog Be
+	//glHint(GL_FOG_HINT, GL_FASTEST);			// Fog Hint Value
+	//glFogf(GL_FOG_START, 7000.0f);				// Fog Start Depth
+	//glFogf(GL_FOG_END, 10000.0f);				// Fog End Depth
+	//glEnable(GL_FOG);
 	//End fog
 
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -82,27 +84,27 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 	if (shaderSupported) {
 		//TODO: this stuff
 
-		shader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/vert_simpleTexture.glsl", "../work/res/shaders/frag_simpleTexture.glsl" });
+		shader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/vert_simpleTexture.vert", "../work/res/shaders/frag_simpleTexture.frag" });
 
-		glUseProgramObjectARB(shader);
+		glUseProgram(shader);
 			
 		uniformExposure = 0.0034f;
 		uniformDecay = 1.0f;
 		uniformDensity = 0.84f;
 		uniformWeight = 5.65f;
 
-		localLight = glGetUniformLocationARB(shader, "lightPositionOnScreen");
-		glUniform2fARB(localLight, uniformLightX, uniformLightY);
-		localExposure = glGetUniformLocationARB(shader, "exposure");
-		glUniform1fARB(localExposure, uniformExposure);
-		localDecay = glGetUniformLocationARB(shader, "decay");
-		glUniform1fARB(localDecay, uniformDecay);
-		localDensity = glGetUniformLocationARB(shader, "density");
-		glUniform1fARB(localDensity, uniformDensity);
-		localWeight = glGetUniformLocationARB(shader, "weight");
-		glUniform1fARB(localWeight, uniformWeight);
-		localTexture = glGetUniformLocationARB(shader, "myTexture");
-		glUniform1fARB(localTexture, screenCopyTextureId);
+		localLight = glGetUniformLocation(shader, "lightPositionOnScreen");
+		glUniform2f(localLight, uniformLightX, uniformLightY);
+		localExposure = glGetUniformLocation(shader, "exposure");
+		glUniform1f(localExposure, uniformExposure);
+		localDecay = glGetUniformLocation(shader, "decay");
+		glUniform1f(localDecay, uniformDecay);
+		localDensity = glGetUniformLocation(shader, "density");
+		glUniform1f(localDensity, uniformDensity);
+		localWeight = glGetUniformLocation(shader, "weight");
+		glUniform1f(localWeight, uniformWeight);
+		localTexture = glGetUniformLocation(shader, "myTexture");
+		glUniform1f(localTexture, screenCopyTextureId);
 		/*
 		cout << "Light: " << localLight << endl;
 		cout << "Exposure: " << localExposure << endl;
@@ -136,6 +138,9 @@ void Engine::update()
 
 void Engine::render()
 {
+
+	geometryMain->setColorOn(false);
+
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	glColor4f(1, 1, 1, 1);
@@ -152,9 +157,10 @@ void Engine::render()
 
 	getLightScreenCoord();
 	
+	
 	//STEP 1 ------------------------
 	//Draw objects black with light
-	glUseProgramObjectARB(0);
+	glUseProgram(0);
 	
 	glEnable(GL_TEXTURE9);
 	glColor4f(0, 0, 0, 1);
@@ -176,9 +182,9 @@ void Engine::render()
 		geometryMain->toggleTextures(); //true
 		geometryMain->renderGeometry();
 		geometryMain->toggleTextures(); //false
-	glPopMatrix(); 
-	
-	
+	glPopMatrix();
+	glColor4f(1, 1, 1, 1);
+	/*
 	//STEP 3 ------------------------
 	//Paint light scattering effect
 	glMatrixMode(GL_PROJECTION);
@@ -188,17 +194,17 @@ void Engine::render()
 	glLoadIdentity();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	glActiveTextureARB(GL_TEXTURE8_ARB);
+	glActiveTexture(GL_TEXTURE8);
 	glBindTexture(GL_TEXTURE9, screenCopyTextureId);
 
 	//update values
-	glUseProgramObjectARB(shader);
-	glUniform2fARB(localLight, uniformLightX, uniformLightY); //mostly just this one
-	glUniform1fARB(localExposure, uniformExposure);
-	glUniform1fARB(localDecay, uniformDecay);
-	glUniform1fARB(localDensity, uniformDensity);
-	glUniform1fARB(localWeight, uniformWeight);
-	glUniform1iARB(localTexture, 0);
+	glUseProgram(shader);
+	glUniform2f(localLight, uniformLightX, uniformLightY); //mostly just this one
+	glUniform1f(localExposure, uniformExposure);
+	glUniform1f(localDecay, uniformDecay);
+	glUniform1f(localDensity, uniformDensity);
+	glUniform1f(localWeight, uniformWeight);
+	glUniform1i(localTexture, 0);
 
 	glEnable(GL_TEXTURE9);
 	glEnable(GL_BLEND);
@@ -218,12 +224,12 @@ void Engine::render()
 		glVertex2f(-renderWidth / 2, renderHeight / 2);
 	glEnd();
 
-	glUseProgramObjectARB(0);
-
+	glUseProgram(0);
+	
 	//glDisable(GL_BLEND);
 	//glDisable(GL_TEXTURE9);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHTING);*/
 	
 }
 
@@ -264,7 +270,7 @@ void Engine::createScreenCopyTexture()
 	char* emptyData = (char*)malloc(width * height * 3 * sizeof(char)); //allocate memory for textures (*3 for rgb)
 	memset(emptyData, 0, width * height * 3 * sizeof(char)); //set memory
 
-	glActiveTextureARB(GL_TEXTURE8);
+	glActiveTexture(GL_TEXTURE8);
 	glGenTextures(1, &screenCopyTextureId);
 	glBindTexture(GL_TEXTURE9, screenCopyTextureId);	//bind texture name
 	glTexImage2D(GL_TEXTURE9, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, emptyData); //specify texture
