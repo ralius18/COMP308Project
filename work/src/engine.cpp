@@ -89,7 +89,7 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 
 		glUseProgram(shader);
 			
-		uniformExposure = 0.0034f;
+		uniformExposure = 0.0017f;
 		uniformDecay = 1.0f;
 		uniformDensity = 0.84f;
 		uniformWeight = 5.65f;
@@ -176,7 +176,7 @@ void Engine::render()
 		geometryMain->toggleTextures(); //false
 	glPopMatrix();
 	
-
+	
 	//STEP 3 ------------------------
 	//Paint light scattering effect
 	glMatrixMode(GL_PROJECTION);
@@ -201,7 +201,7 @@ void Engine::render()
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	/*
+	
 	glBegin(GL_QUADS);
 		glTexCoord2f(0, 0);
 		glVertex2f(-renderWidth / 2, -renderHeight / 2);
@@ -215,7 +215,7 @@ void Engine::render()
 		glTexCoord2f(0, 1);
 		glVertex2f(-renderWidth / 2, renderHeight / 2);
 	glEnd();
-	*/
+	
 	glUseProgram(0);
 	
 

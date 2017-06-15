@@ -160,8 +160,8 @@ void GeometryMain::renderGeometry() {
 
 void GeometryMain::toggleTextures() {
 	textures_enabled = !textures_enabled;
-	if(textures_enabled) cout << "Textures are: Enabled" << endl;
-	else cout << "Textures are: Disabled" << endl;
+	//if(textures_enabled) cout << "Textures are: Enabled" << endl;
+	//else cout << "Textures are: Disabled" << endl;
 }
 
 void GeometryMain::toggleColor() {
