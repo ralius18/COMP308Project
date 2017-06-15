@@ -68,10 +68,10 @@ void GeometryMain::loadTextures() {
 
 	glBindTexture(GL_TEXTURE_2D, textures[0]); // Bind our first texture as a 2D texture
 	// Finnaly, actually fill the data into our texture
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texBrick.w, texBrick.h, texBrick.glFormat(), GL_UNSIGNED_BYTE, texBrick.dataPointer());
+	//gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texBrick.w, texBrick.h, texBrick.glFormat(), GL_UNSIGNED_BYTE, texBrick.dataPointer());
 
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texWood.w, texWood.h, texWood.glFormat(), GL_UNSIGNED_BYTE, texWood.dataPointer());
+	//gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texWood.w, texWood.h, texWood.glFormat(), GL_UNSIGNED_BYTE, texWood.dataPointer());
 }
 
 void GeometryMain::renderGeometry() {

@@ -7,16 +7,16 @@ uniform sampler2D myTexture;
 const int NUM_SAMPLES = 100 ;
 void main()
 {	
-	vec2 deltaTextCoord = vec2( gl_TexCoord[0].st - lightPositionOnScreen.xy );
-	vec2 textCoo = gl_TexCoord[0].st;
+	vec2 deltaTextCoord = vec2( gl_TexCoord[0].xy - lightPositionOnScreen.xy );
+	vec2 textCoord = gl_TexCoord[0].xy;
 	deltaTextCoord *= 1.0 /  float(NUM_SAMPLES) * density;
 	float illuminationDecay = 1.0;
 	
 	
 	for(int i=0; i < NUM_SAMPLES ; i++)
 	{
-			textCoo -= deltaTextCoord;
-			vec4 sample = texture2D(myTexture, textCoo );
+			textCoord -= deltaTextCoord;
+			vec4 sample = texture2D(myTexture, textCoord );
 			
 			sample *= illuminationDecay * weight;
 			

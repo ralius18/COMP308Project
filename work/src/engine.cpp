@@ -12,19 +12,20 @@
 
 using namespace std;
 using namespace cgra;
+using namespace math;
 
 Engine* Engine::engine;
 
 #define renderWidth 640
 #define renderHeight 480
-#define OFF_SCREEN_RENDER_RATIO 2
+#define OFF_SCREEN_RENDER_RATIO 1
 
-#define PI 3.14159
+#define PI 3.14
 
 Engine::Engine(GeometryMain gm, GLFWwindow* window)
 {
 	glClearColor(0.2, 0.2, 0.28, 1);
-	glEnable(GL_TEXTURE9);
+	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_ALPHA_TEST);
@@ -43,9 +44,9 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 	//glEnable(GL_FOG);
 	//End fog
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	//glEnableClientState(GL_VERTEX_ARRAY);
+	//glEnableClientState(GL_NORMAL_ARRAY);
+	//glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	engine = this;
 
@@ -59,9 +60,9 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 
 	m_nSamples = 3;		// Number of sample rays to use in integral equation
 	m_Kr = 0.0025f;		// Rayleigh scattering constant
-	m_Kr4PI = m_Kr*4.0f*PI;
+	m_Kr4PI = m_Kr*4.0f*pi();
 	m_Km = 0.0010f;		// Mie scattering constant
-	m_Km4PI = m_Km*4.0f*PI;
+	m_Km4PI = m_Km*4.0f*pi();
 	m_ESun = 20.0f;		// Sun brightness constant
 	m_g = -0.990f;		// The Mie phase asymmetry factor
 	m_fExposure = 2.0f;
@@ -116,19 +117,11 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 		GLuint atmosshader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/GroundFromAtmosphere.vert", "../work/res/shaders/GroundFromAtmosphere.frag" });
 	}
 
-
-	gameOn = 1;
 }
 
 void Engine::run()
 {
-	while (gameOn)
-	{
-		update();
-		render();
-
-		glfwSwapBuffers(window);
-	}
+	
 }
 
 void Engine::update() 
@@ -139,15 +132,15 @@ void Engine::update()
 void Engine::render()
 {
 
-	geometryMain->setColorOn(false);
-
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	glColor4f(1, 1, 1, 1);
 
 	glViewport(0, 0, renderWidth / OFF_SCREEN_RENDER_RATIO, renderHeight / OFF_SCREEN_RENDER_RATIO);
 
-	glDisable(GL_TEXTURE9);
+	//STEP 1 ------------------------
+	//Draw objects black with white light
+	glDisable(GL_TEXTURE_2D);
 	glPushMatrix();
 		glEnable(GL_COLOR_MATERIAL);
 			glTranslatef(light->lightPos[0], light->lightPos[1], light->lightPos[2]);
@@ -157,22 +150,21 @@ void Engine::render()
 
 	getLightScreenCoord();
 	
-	
-	//STEP 1 ------------------------
-	//Draw objects black with light
 	glUseProgram(0);
 	
-	glEnable(GL_TEXTURE9);
+	glEnable(GL_TEXTURE_2D);
 	glColor4f(0, 0, 0, 1);
 	glPushMatrix();
+		geometryMain->setColorOn(false);
 		geometryMain->renderGeometry();
+		geometryMain->setColorOn(true);
 	glPopMatrix();
-	
 
 	copyFrameBufferToTexture();
 	
 	glViewport(0, 0, renderWidth, renderHeight);
-	glEnable(GL_TEXTURE9);
+	glEnable(GL_TEXTURE_2D);
+	
 	
 	//STEP 2 ------------------------
 	//Draw scene with no light scattering
@@ -183,8 +175,8 @@ void Engine::render()
 		geometryMain->renderGeometry();
 		geometryMain->toggleTextures(); //false
 	glPopMatrix();
-	glColor4f(1, 1, 1, 1);
-	/*
+	
+
 	//STEP 3 ------------------------
 	//Paint light scattering effect
 	glMatrixMode(GL_PROJECTION);
@@ -194,8 +186,8 @@ void Engine::render()
 	glLoadIdentity();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	glActiveTexture(GL_TEXTURE8);
-	glBindTexture(GL_TEXTURE9, screenCopyTextureId);
+	glActiveTexture(GL_TEXTURE_2D);	// GL_TEXTURE9 ?????
+	glBindTexture(GL_TEXTURE_2D, screenCopyTextureId);
 
 	//update values
 	glUseProgram(shader);
@@ -206,10 +198,10 @@ void Engine::render()
 	glUniform1f(localWeight, uniformWeight);
 	glUniform1i(localTexture, 0);
 
-	glEnable(GL_TEXTURE9);
+	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	
+	/*
 	glBegin(GL_QUADS);
 		glTexCoord2f(0, 0);
 		glVertex2f(-renderWidth / 2, -renderHeight / 2);
@@ -223,13 +215,14 @@ void Engine::render()
 		glTexCoord2f(0, 1);
 		glVertex2f(-renderWidth / 2, renderHeight / 2);
 	glEnd();
-
+	*/
 	glUseProgram(0);
 	
+
 	//glDisable(GL_BLEND);
 	//glDisable(GL_TEXTURE9);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_LIGHTING);*/
+	glDisable(GL_LIGHTING);
 	
 }
 
@@ -250,16 +243,9 @@ void Engine::getLightScreenCoord()
 	GLdouble windowZ = 0;
 
 	GLint projectResult = gluProject(light->lightPos[0], light->lightPos[1], light->lightPos[2], modelview, proj, viewport, &windowX, &windowY, &windowZ);
-	
-	//if (projectResult == GL_TRUE)
-		//cout << "Project Successful" << endl;
-	//else
-		//cout << "Project Failure" << endl;
 
 	uniformLightX = windowX / ((float)renderWidth / OFF_SCREEN_RENDER_RATIO);
 	uniformLightY = windowY / ((float)renderHeight / OFF_SCREEN_RENDER_RATIO);
-
-	//cout << "Light Position: winX=" << windowX << " winY" << windowY << " x=" << uniformLightX << " y=" << uniformLightY << endl;
 }
 
 void Engine::createScreenCopyTexture()
@@ -270,18 +256,18 @@ void Engine::createScreenCopyTexture()
 	char* emptyData = (char*)malloc(width * height * 3 * sizeof(char)); //allocate memory for textures (*3 for rgb)
 	memset(emptyData, 0, width * height * 3 * sizeof(char)); //set memory
 
-	glActiveTexture(GL_TEXTURE8);
+	glActiveTexture(GL_TEXTURE9);
 	glGenTextures(1, &screenCopyTextureId);
-	glBindTexture(GL_TEXTURE9, screenCopyTextureId);	//bind texture name
-	glTexImage2D(GL_TEXTURE9, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, emptyData); //specify texture
-	glTexParameteri(GL_TEXTURE9, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	//use lerp for magnification and minification (below)
-	glTexParameteri(GL_TEXTURE9, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, screenCopyTextureId);	//bind texture name
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, emptyData); //specify texture
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	//use lerp for magnification and minification (below)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	free(emptyData);	//release memory;
 }
 
 void Engine::copyFrameBufferToTexture() 
 {
-	glBindTexture(GL_TEXTURE9, screenCopyTextureId);
-	glCopyTexSubImage2D(GL_TEXTURE9, 0, 0, 0, 0, 0, renderWidth, renderHeight);
+	glBindTexture(GL_TEXTURE_2D, screenCopyTextureId);
+	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, renderWidth, renderHeight);
 }
