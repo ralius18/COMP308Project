@@ -133,7 +133,6 @@ void Engine::update()
 
 void Engine::render()
 {
-	glUseProgram(shader);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	glColor4f(1, 1, 1, 1);
