@@ -42,5 +42,6 @@ public:
 	void renderGeometry();
 	void toggleTextures();
 	void toggleColor();
-	void setColorOn(bool b);
+	void setColorOn(bool c);
+	void setTexturesOn(bool t);
 };

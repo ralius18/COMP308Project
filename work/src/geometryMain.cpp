@@ -171,7 +171,12 @@ void GeometryMain::toggleColor() {
 }
 
 //Set to true to load in color, false else (everything black).
-void GeometryMain::setColorOn(bool b) {
-	color_enabled = b;
+void GeometryMain::setColorOn(bool c) {
+	color_enabled = c;
+	//cout << "" << endl;
+}
+
+void GeometryMain::setTexturesOn(bool t) {
+	textures_enabled = t;
 	//cout << "" << endl;
 }
