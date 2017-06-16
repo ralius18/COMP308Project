@@ -134,7 +134,7 @@ void Engine::render()
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	glColor4f(1, 1, 1, 1);
+	glColor4f(1, 1, 1, 1);//here is the background colour, which I need to replace
 
 	glViewport(0, 0, renderWidth / OFF_SCREEN_RENDER_RATIO, renderHeight / OFF_SCREEN_RENDER_RATIO);
 
