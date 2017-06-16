@@ -26,14 +26,15 @@ private:
 
 	int texturesSize;
 	GLuint *textures;
-	Geometry **objects = new Geometry*[2];
-	enum objectNames { sphere, box };
+	Geometry **objects = nullptr;
+	enum objectNames { sphere, box, teapot };
 
 	bool textures_enabled = false;
 	bool color_enabled = true;
 
 	void loadObjects();
 	void loadTextures();
+	enum textureNames { brick, wood, cloud };
 
 public:
 	GeometryMain();

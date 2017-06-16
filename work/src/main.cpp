@@ -149,8 +149,10 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 		}
 	}
 	if(action == GLFW_RELEASE) {
-		if(key == GLFW_KEY_T)
-			g_engine->geometryMain->toggleTextures();
+		if (key == GLFW_KEY_T) {
+			//g_engine->geometryMain->toggleTextures();
+			//Does nothing because g_engine set's it to true anyway.
+		}
 		if (key == GLFW_KEY_Y) {
 			//g_engine->geometryMain->toggleTextures();
 			//Does nothing because g_engine set's it to true anyway.

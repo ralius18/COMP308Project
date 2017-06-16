@@ -151,30 +151,32 @@ void Engine::render()
 
 	getLightScreenCoord();
 	
-	glUseProgram(0);
+	//glUseProgram(0);
 	
 	glEnable(GL_TEXTURE_2D);
-	glColor4f(0, 0, 0, 1);
+	//glColor4f(0, 0, 0, 1); no need for this when using geometry main.
 	glPushMatrix();
+		//No textures + all black
+		geometryMain->setTexturesOn(false);
 		geometryMain->setColorOn(false);
 		geometryMain->renderGeometry();
-		geometryMain->setColorOn(true);
 	glPopMatrix();
 
 	copyFrameBufferToTexture();
 	
 	glViewport(0, 0, renderWidth, renderHeight);
-	glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_TEXTURE_2D); // no need for this...
 	
 	
 	//STEP 2 ------------------------
 	//Draw scene with no light scattering
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glColor4f(1, 1, 1, 1);
+	glColor4f(1, 1, 1, 1); //maybe?
 	glPushMatrix();
-		geometryMain->toggleTextures(); //true
+		geometryMain->setColorOn(true);
+		geometryMain->setTexturesOn(true); //true
 		geometryMain->renderGeometry();
-		geometryMain->toggleTextures(); //false
+		//geometryMain->setTexturesOn(false); //false, no need for this i think (99% sure)
 	glPopMatrix();
 	
 	
@@ -187,7 +189,7 @@ void Engine::render()
 	glLoadIdentity();
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	glActiveTexture(GL_TEXTURE_2D);	// GL_TEXTURE9 ?????
+	glActiveTexture(GL_TEXTURE_2D);	// GL_TEXTURE9 ????? Welp, ok lol
 	glBindTexture(GL_TEXTURE_2D, screenCopyTextureId);
 
 	//update values

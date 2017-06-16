@@ -278,9 +278,7 @@ void Geometry::createDisplayList(){
 			//UVs
 			x = m_uvs[currentSquare.v[j].t].x;
 			y = m_uvs[currentSquare.v[j].t].y;
-			//glTexCoord2f(x * txtrSprd, y * txtrSprd);
 			glMultiTexCoord2f(GL_TEXTURE0, x*txtrSprd, y*txtrSprd);
-			glMultiTexCoord2f(GL_TEXTURE1, x*txtrSprd, y*txtrSprd);
 
 			//points
 			x = m_points[currentSquare.v[j].p].x;
