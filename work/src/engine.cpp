@@ -22,7 +22,7 @@ Engine* Engine::engine;
 
 #define PI 3.14
 
-Engine::Engine(GeometryMain gm, GLFWwindow* window)
+Engine::Engine(GLFWwindow* window)
 {
 	glClearColor(0.2, 0.2, 0.28, 1);
 	glEnable(GL_TEXTURE_2D);
@@ -52,7 +52,7 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 
 	light = new Light();
 
-	geometryMain = &gm;
+	geometryMain = new GeometryMain();
 
 	this->window = window;
 
@@ -86,9 +86,9 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 		//TODO: this stuff
 
 		shader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/vert_simpleTexture.vert", "../work/res/shaders/frag_simpleTexture.frag" });
-
+		
 		glUseProgram(shader);
-			
+
 		uniformExposure = 0.0017f;
 		uniformDecay = 1.0f;
 		uniformDensity = 0.84f;
@@ -115,6 +115,8 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 		cout << "Texture: " << localTexture << endl;
 		*/
 		GLuint atmosshader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/GroundFromAtmosphere.vert", "../work/res/shaders/GroundFromAtmosphere.frag" });
+
+		glUseProgram(0);
 	}
 
 }
@@ -131,7 +133,7 @@ void Engine::update()
 
 void Engine::render()
 {
-
+	glUseProgram(shader);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	glColor4f(1, 1, 1, 1);

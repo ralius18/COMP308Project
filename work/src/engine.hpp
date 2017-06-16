@@ -7,7 +7,7 @@
 class Engine
 {
 public:
-	Engine(GeometryMain, GLFWwindow*);
+	Engine(GLFWwindow*);
 
 	void mainLoop();
 	void render();

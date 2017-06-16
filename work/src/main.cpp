@@ -66,9 +66,6 @@ bool g_useShader = false;
 GLuint g_texture = 0;
 GLuint g_shader = 0;
 
-//Loads and Renders objects with multi layering textures
-GeometryMain *g_geometryMain = nullptr;
-
 Engine *g_engine;
 
 // Mouse Button callback
@@ -125,7 +122,7 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	// cout << "Key Callback :: key=" << key << "scancode=" << scancode	<< "action=" << action << "mods=" << mods << endl;
 	// YOUR CODE GOES HERE
 	// ...
-	if (action == GLFW_PRESS || GLFW_REPEAT) {
+	if (action == GLFW_PRESS || action == GLFW_REPEAT) {
 		float yRotRad = radians(g_yaw);
 		float speed = 0.5;
 		if (key == GLFW_KEY_W) {
@@ -153,9 +150,11 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	}
 	if(action == GLFW_RELEASE) {
 		if(key == GLFW_KEY_T)
-			g_geometryMain->toggleTextures();
-		if (key == GLFW_KEY_Y)
-			g_geometryMain->toggleColor();
+			g_engine->geometryMain->toggleTextures();
+		if (key == GLFW_KEY_Y) {
+			//g_engine->geometryMain->toggleTextures();
+			//Does nothing because g_engine set's it to true anyway.
+		}
 	}
 }
 
@@ -377,9 +376,7 @@ int main(int argc, char **argv) {
 	initLight();
 	//initShader();
 
-	g_geometryMain = new GeometryMain();
-
-	g_engine = new Engine(*g_geometryMain, g_window);
+	g_engine = new Engine(g_window);
 
 
 	cout << "--WASD for camera movement." << endl;
