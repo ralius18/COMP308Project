@@ -68,10 +68,10 @@ void GeometryMain::loadTextures() {
 
 	glBindTexture(GL_TEXTURE_2D, textures[0]); // Bind our first texture as a 2D texture
 	// Finnaly, actually fill the data into our texture
-	//gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texBrick.w, texBrick.h, texBrick.glFormat(), GL_UNSIGNED_BYTE, texBrick.dataPointer());
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texBrick.w, texBrick.h, texBrick.glFormat(), GL_UNSIGNED_BYTE, texBrick.dataPointer());
 
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
-	//gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texWood.w, texWood.h, texWood.glFormat(), GL_UNSIGNED_BYTE, texWood.dataPointer());
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texWood.w, texWood.h, texWood.glFormat(), GL_UNSIGNED_BYTE, texWood.dataPointer());
 }
 
 void GeometryMain::renderGeometry() {
@@ -113,7 +113,7 @@ void GeometryMain::renderGeometry() {
 	float sqXs[4] = { -1, 1, 1,-1 };
 	float sqZs[4] = { -1,-1, 1, 1 };
 	int size = 20; //Half the length (or width) of the square
-	int textureSpread = 1; //How much the texture repeats itself over the square.
+	int textureSpread = 4; //How much the texture repeats itself over the square.
 
 	if (color_enabled) {
 		glColor3f(0.3f, 0.3f, 0.3f);
@@ -121,13 +121,11 @@ void GeometryMain::renderGeometry() {
 
 	for (int i = 0; i < 4; i++) {
 		glNormal3f(sqXs[i] * size, -2, sqZs[i] * size);
-		if (textures_enabled) {
-			//glBindTexture(GL_TEXTURE_2D, textures[0]);
-			//glTexCoord2f(sqXs[i] * textureSpread, sqZs[i] * textureSpread);
-			glMultiTexCoord2f(GL_TEXTURE0, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
-			glMultiTexCoord2f(GL_TEXTURE1, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
-			//glBindTexture(GL_TEXTURE_2D, 0);
-		}
+		//glBindTexture(GL_TEXTURE_2D, textures[0]);
+		//glTexCoord2f(sqXs[i] * textureSpread, sqZs[i] * textureSpread);
+		glMultiTexCoord2f(GL_TEXTURE0, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
+		glMultiTexCoord2f(GL_TEXTURE1, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
+		//glBindTexture(GL_TEXTURE_2D, 0);
 		glVertex3f(sqXs[i] * size, -2, sqZs[i] * size);
 	}
 	glEnd();
