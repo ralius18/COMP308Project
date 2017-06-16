@@ -12,19 +12,21 @@ void main()
 	deltaTextCoord *= 1.0 /  float(NUM_SAMPLES) * density;
 	float illuminationDecay = 1.0;
 	
-	
+	vec3 outputColor = vec3(0,0,0);
 	for(int i=0; i < NUM_SAMPLES ; i++)
 	{
 			textCoord -= deltaTextCoord;
-			vec4 sample = texture2D(myTexture, textCoord );
+			vec3 sample = texture2D(myTexture, textCoord ).xyz;
 			
 			sample *= illuminationDecay * weight;
 			
-			gl_FragColor += sample;
+			outputColor += sample;
 			
 			illuminationDecay *= decay;
 	}
 	
 	
-	gl_FragColor *= exposure;
+	outputColor *= exposure;
+	
+	gl_FragColor = vec4(outputColor,1);
 }

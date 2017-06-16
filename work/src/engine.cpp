@@ -22,7 +22,7 @@ Engine* Engine::engine;
 
 #define PI 3.14
 
-Engine::Engine(GeometryMain gm, GLFWwindow* window)
+Engine::Engine(GLFWwindow* window)
 {
 	glClearColor(0.2, 0.2, 0.28, 1);
 	glEnable(GL_TEXTURE_2D);
@@ -52,7 +52,7 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 
 	light = new Light();
 
-	geometryMain = &gm;
+	geometryMain = new GeometryMain();
 
 	this->window = window;
 
@@ -86,10 +86,10 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 		//TODO: this stuff
 
 		shader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/vert_simpleTexture.vert", "../work/res/shaders/frag_simpleTexture.frag" });
-
+		
 		glUseProgram(shader);
-			
-		uniformExposure = 0.0034f;
+
+		uniformExposure = 0.0017f;
 		uniformDecay = 1.0f;
 		uniformDensity = 0.84f;
 		uniformWeight = 5.65f;
@@ -115,6 +115,8 @@ Engine::Engine(GeometryMain gm, GLFWwindow* window)
 		cout << "Texture: " << localTexture << endl;
 		*/
 		GLuint atmosshader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/GroundFromAtmosphere.vert", "../work/res/shaders/GroundFromAtmosphere.frag" });
+
+		glUseProgram(0);
 	}
 
 }
@@ -131,7 +133,6 @@ void Engine::update()
 
 void Engine::render()
 {
-
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	glColor4f(1, 1, 1, 1);//here is the background colour, which I need to replace
@@ -176,7 +177,7 @@ void Engine::render()
 		geometryMain->toggleTextures(); //false
 	glPopMatrix();
 	
-
+	
 	//STEP 3 ------------------------
 	//Paint light scattering effect
 	glMatrixMode(GL_PROJECTION);
@@ -201,7 +202,7 @@ void Engine::render()
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-	/*
+	
 	glBegin(GL_QUADS);
 		glTexCoord2f(0, 0);
 		glVertex2f(-renderWidth / 2, -renderHeight / 2);
@@ -215,7 +216,7 @@ void Engine::render()
 		glTexCoord2f(0, 1);
 		glVertex2f(-renderWidth / 2, renderHeight / 2);
 	glEnd();
-	*/
+	
 	glUseProgram(0);
 	
 
