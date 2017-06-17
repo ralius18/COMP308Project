@@ -2,6 +2,7 @@
 
 #include "light.hpp"
 #include "geometryMain.hpp"
+#include "GLUtil.h"
 
 
 class Engine

@@ -9,6 +9,7 @@
 #include "math.h"
 #include "geometry.hpp"
 #include "simple_shader.hpp"
+#include "GLUtil.h"
 
 using namespace std;
 using namespace cgra;
