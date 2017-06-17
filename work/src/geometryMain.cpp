@@ -43,20 +43,22 @@ void GeometryMain::loadObjects() {
 	objects = new Geometry*[3];
 
 	//Args are sting for the file, int for how much the texture spreads on the object
-	objects[0] = new Geometry("../work/res/assets/sphere.obj", 1);
-	objects[1] = new Geometry("../work/res/assets/box.obj", 4);
-	objects[2] = new Geometry("../work/res/assets/teapot.obj", 1);
+	objects[0] = new Geometry("../work/res/assets/sphere.obj", 4);
+	objects[1] = new Geometry("../work/res/assets/box.obj", 8);
+	//objects[2] = new Geometry("../work/res/assets/teapot.obj", 1);
 }
 
 void GeometryMain::loadTextures() {
 
-	texturesSize = 3; //The amount of textures we are loading in
+	texturesSize = 5; //The amount of textures we are loading in
 	textures = new GLuint[texturesSize];
 
 	//Load in images
 	Image texBrick("../work/res/textures/brick.jpg");
 	Image texWood("../work/res/textures/wood.jpg");
 	Image texCloud("../work/res/textures/cloud.jpg");
+	Image texCheckRed("../work/res/textures/red-checks.png");
+	Image texCheckGreen("../work/res/textures/green-checks.png");
 
 	//Generate our textures array.
 	glGenTextures(texturesSize, textures); // Generate texture IDs
@@ -81,15 +83,27 @@ void GeometryMain::loadTextures() {
 	glBindTexture(GL_TEXTURE_2D, textures[cloud]);
 	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texCloud.w, texCloud.h, texCloud.glFormat(), GL_UNSIGNED_BYTE, texCloud.dataPointer());
 
+	glBindTexture(GL_TEXTURE_2D, textures[3]);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texCheckRed.w, texCheckRed.h, texCheckRed.glFormat(), GL_UNSIGNED_BYTE, texCheckRed.dataPointer());
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 32, 32, 0, GL_RGBA, GL_UNSIGNED_BYTE, texels0);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D, textures[4]);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texCheckGreen.w, texCheckGreen.h, texCheckGreen.glFormat(), GL_UNSIGNED_BYTE, texCheckGreen.dataPointer());
+
+
 }
 
 void GeometryMain::renderGeometry() {
 
 	if (textures_enabled) {
 		// Enable Drawing texures
+		glActiveTexture(GL_TEXTURE0);
+		glEnable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE1);
 		glEnable(GL_TEXTURE_2D);
 		// Use Texture as the color
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	}
 	//Enable using colour as a material.
 	glEnable(GL_COLOR_MATERIAL);
@@ -101,8 +115,12 @@ void GeometryMain::renderGeometry() {
 		glColor3f(0.3f, 0.3f, 0.3f);
 	if (textures_enabled) {
 		glActiveTexture(GL_TEXTURE0);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		//Texture for the floor because putting it anywhere else won't work...
 		glBindTexture(GL_TEXTURE_2D, textures[brick]);
+		glActiveTexture(GL_TEXTURE1);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glBindTexture(GL_TEXTURE_2D, textures[cloud]);
 	}
 
 	float sqXs[4] = { -1, 1, 1,-1 };
@@ -114,17 +132,23 @@ void GeometryMain::renderGeometry() {
 	for (int i = 0; i < 4; i++) {
 		glNormal3f(sqXs[i] * size, -2, sqZs[i] * size);
 		glMultiTexCoord2f(GL_TEXTURE0, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
+		glMultiTexCoord2f(GL_TEXTURE1, sqXs[i] * textureSpread/4, sqZs[i] * textureSpread/4);
 		glVertex3f(sqXs[i] * size, -2, sqZs[i] * size);
 	}
 	glEnd();
 
-	//Draw sphere
 	glPushMatrix();
+
+	//Draw sphere
 	if (color_enabled)
 		glColor3f(0.8f, 0.3f, 0.0f); //Metalic Bronze color
 	if (textures_enabled) {
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glBindTexture(GL_TEXTURE_2D, textures[4]);
+		glActiveTexture(GL_TEXTURE1);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glBindTexture(GL_TEXTURE_2D, textures[brick]);
 	}
 	objects[sphere]->renderGeometry();
 
@@ -132,10 +156,14 @@ void GeometryMain::renderGeometry() {
 	glPushMatrix();
 	glTranslatef(10, 0, -10);
 	if (color_enabled)
-		glColor3f(0.4f, 0.0f, 0.0f); //Dark Red
+		glColor3f(1.0f, 1.0f, 1.0f); //Dark Red
 	if (textures_enabled) {
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textures[wood]);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glBindTexture(GL_TEXTURE_2D, textures[3]);
+		glActiveTexture(GL_TEXTURE1);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glBindTexture(GL_TEXTURE_2D, textures[4]);
 	}
 	objects[box]->renderGeometry();
 	glPopMatrix();
@@ -148,21 +176,27 @@ void GeometryMain::renderGeometry() {
 		glColor3f(0.6f, 0.6f, 0.6f); //Dark Red
 	if (textures_enabled) {
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textures[cloud]);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE1);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glBindTexture(GL_TEXTURE_2D, textures[brick]);
 	}
-	objects[teapot]->renderGeometry();
+	//objects[teapot]->renderGeometry();
 	glPopMatrix();
 
 	// Cleanup
 	glPopMatrix();
 	if (textures_enabled) {
 		//clearing all the gl_textures that i've used
-		for (int i = 0; i <= 1; i++) {
+		for (int i = 0; i <= 5; i++) {
 			glActiveTexture(GL_TEXTURE0+i);
 			glBindTexture(GL_TEXTURE_2D, 0);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glDisable(GL_TEXTURE_2D);
 		}
-		glDisable(GL_TEXTURE_2D);
+		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		glActiveTexture(GL_TEXTURE0);
+		
 	}
 	glDisable(GL_COLOR_MATERIAL);
 	glColor3f(0, 0, 0);
