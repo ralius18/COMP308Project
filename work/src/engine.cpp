@@ -33,6 +33,9 @@ Engine::Engine(GLFWwindow* window)
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 
+	m_pBuffer.Init(1024, 1024, 0);
+	m_pBuffer.MakeCurrent();
+
 	//GLfloat fogColor[4] = { 0.2f ,0.2f ,0.28f ,1.0f };
 	//Set fog 
 	//glFogi(GL_FOG_MODE, GL_LINEAR);		// Fog Mode
@@ -81,6 +84,15 @@ Engine::Engine(GLFWwindow* window)
 	m_fRayleighScaleDepth = 0.25f;
 	m_fMieScaleDepth = 0.1f;
 
+	m_pbOpticalDepth.MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
+
+	m_shSkyFromSpace.Load("SkyFromSpace");
+	m_shSkyFromAtmosphere.Load("SkyFromAtmosphere");
+
+	CPixelBuffer pb;
+	pb.Init(256, 256, 1);
+	pb.MakeGlow2D(40.0f, 0.1f);
+
 	shaderSupported = true;
 	if (shaderSupported) {
 		//TODO: this stuff
@@ -114,7 +126,7 @@ Engine::Engine(GLFWwindow* window)
 		cout << "Weight: " << localWeight << endl;
 		cout << "Texture: " << localTexture << endl;
 		*/
-		GLuint atmosshader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/GroundFromAtmosphere.vert", "../work/res/shaders/GroundFromAtmosphere.frag" });
+		//GLuint atmosshader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/GroundFromAtmosphere.vert", "../work/res/shaders/GroundFromAtmosphere.frag" });
 
 		glUseProgram(0);
 	}
@@ -131,14 +143,16 @@ void Engine::update()
 
 }
 
-void Engine::render()
+void Engine::render(float cam_x, float cam_y, float cam_z)
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	glColor4f(1, 1, 1, 1);//here is the background colour, which I need to replace
+	//glColor4f(1, 1, 1, 1);//here is the background colour, which I need to replace
+
 
 	glViewport(0, 0, renderWidth / OFF_SCREEN_RENDER_RATIO, renderHeight / OFF_SCREEN_RENDER_RATIO);
 
+	scatteringRender(cam_x,cam_y,cam_z);
 	//STEP 1 ------------------------
 	//Draw objects black with white light
 	glDisable(GL_TEXTURE_2D);
@@ -274,3 +288,77 @@ void Engine::copyFrameBufferToTexture()
 	glBindTexture(GL_TEXTURE_2D, screenCopyTextureId);
 	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, renderWidth, renderHeight);
 }
+
+void Engine::scatteringRender(float c_x, float c_y, float c_z) 
+{	
+
+	m_bUseHDR = true;
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	CShaderObject *pSkyShader;
+	if(vCamera.Magnitude() >= m_fOuterRadius)
+		pSkyShader = &m_shSkyFromSpace;
+	else
+		pSkyShader = &m_shSkyFromAtmosphere;
+
+	pSkyShader->Enable();
+	pSkyShader->SetUniformParameter3f("v3CameraPos", c_x, c_y, c_z);
+	pSkyShader->SetUniformParameter3f("v3LightPos", 0.0f, 0.0f, 1.0f);
+	pSkyShader->SetUniformParameter3f("v3InvWavelength", 1/m_fWavelength4[0], 1/m_fWavelength4[1], 1/m_fWavelength4[2]);
+	pSkyShader->SetUniformParameter1f("fCameraHeight", vCamera.Magnitude());
+	pSkyShader->SetUniformParameter1f("fCameraHeight2", vCamera.MagnitudeSquared());
+	pSkyShader->SetUniformParameter1f("fInnerRadius", m_fInnerRadius);
+	pSkyShader->SetUniformParameter1f("fInnerRadius2", m_fInnerRadius*m_fInnerRadius);
+	pSkyShader->SetUniformParameter1f("fOuterRadius", m_fOuterRadius);
+	pSkyShader->SetUniformParameter1f("fOuterRadius2", m_fOuterRadius*m_fOuterRadius);
+	pSkyShader->SetUniformParameter1f("fKrESun", m_Kr*m_ESun);
+	pSkyShader->SetUniformParameter1f("fKmESun", m_Km*m_ESun);
+	pSkyShader->SetUniformParameter1f("fKr4PI", m_Kr4PI);
+	pSkyShader->SetUniformParameter1f("fKm4PI", m_Km4PI);
+	pSkyShader->SetUniformParameter1f("fScale", 1.0f / (m_fOuterRadius - m_fInnerRadius));
+	pSkyShader->SetUniformParameter1f("fScaleDepth", m_fRayleighScaleDepth);
+	pSkyShader->SetUniformParameter1f("fScaleOverScaleDepth", (1.0f / (m_fOuterRadius - m_fInnerRadius)) / m_fRayleighScaleDepth);
+	pSkyShader->SetUniformParameter1f("g", m_g);
+	pSkyShader->SetUniformParameter1f("g2", m_g*m_g);
+
+	glFrontFace(GL_CW);
+	//glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+
+	pSphere = gluNewQuadric();
+	gluSphere(pSphere, m_fOuterRadius, 100, 50);
+	gluDeleteQuadric(pSphere);
+
+	//glDisable(GL_BLEND);
+	glFrontFace(GL_CCW);
+	pSkyShader->Disable();
+
+	glPopMatrix();
+	glFlush();
+
+	//CTexture tTest;
+	//tTest.InitCopy(0, 0, 1024, 1024);
+
+	GLUtil()->MakeCurrent();
+	glViewport(0, 0, GetGameApp()->GetWidth(), GetGameApp()->GetHeight());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glDisable(GL_LIGHTING);
+	glPushMatrix();
+	glLoadIdentity();
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(0, 1, 0, 1, -1, 1);
+
+	//tTest.Enable();
+	m_pBuffer.BindTexture(m_fExposure, m_bUseHDR);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex2f(0, 0);	// For rect texture, can't use 1 as the max texture coord
+	glTexCoord2f(1, 0); glVertex2f(1, 0);
+	glTexCoord2f(1, 1); glVertex2f(1, 1);
+	glTexCoord2f(0, 1); glVertex2f(0, 1);
+	glEnd();
+	m_pBuffer.ReleaseTexture();
+}
+

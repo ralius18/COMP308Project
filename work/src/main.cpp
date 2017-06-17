@@ -238,7 +238,7 @@ void render(int width, int height) {
 
 		glPushMatrix();
 			//g_geometryMain->renderGeometry();
-			g_engine->render();
+			g_engine->render(g_cam_x, g_cam_y, g_cam_z);
 		glPopMatrix(); //To keep things tidy.
 
 		glFlush();
