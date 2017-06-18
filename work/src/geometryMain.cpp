@@ -179,12 +179,8 @@ void GeometryMain::renderGeometry() {
 	glTranslatef(5, 2, 0);
 	glScalef(2, 2, 2);
 	objects[sphere]->renderGeometry();
-<<<<<<< HEAD
-	sphereminmax = objects[sphere]->collision();
-=======
 	std::vector<cgra::vec3> sphereminmax = objects[sphere]->collision();
 	glPopMatrix();
->>>>>>> bf5049fc03322d24aafd9fdf37ebe15047479e2f
 
 	//Draw second shpere
 	if (color_enabled)
@@ -197,17 +193,13 @@ void GeometryMain::renderGeometry() {
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, textures[rust2]);
 	}
-<<<<<<< HEAD
-	objects[box]->renderGeometry();
-	boxminmax = objects[box]->collision();
-=======
+
 	glPushMatrix();
 	glTranslatef(5, 2, 10);
 	glRotatef(160, 0, 1, 0);
 	glScalef(2, 2, 2);
 	objects[sphere]->renderGeometry();
 	//std::vector<cgra::vec3> sphere2minmax = objects[sphere]->collision();
->>>>>>> bf5049fc03322d24aafd9fdf37ebe15047479e2f
 	glPopMatrix();
 
 	//Draw box
@@ -221,17 +213,13 @@ void GeometryMain::renderGeometry() {
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-<<<<<<< HEAD
-	//objects[teapot]->renderGeometry();
-	teapotminmax = objects[teapot]->collision();
-=======
+
 	glPushMatrix();
 	glTranslatef(10, -1, -10);
 	glRotatef(10, 0, 1, 0);
 	glScalef(0.5, 0.5, 0.5);
 	objects[box]->renderGeometry();
 	std::vector<cgra::vec3> boxminmax = objects[box]->collision();
->>>>>>> bf5049fc03322d24aafd9fdf37ebe15047479e2f
 	glPopMatrix();
 
 	//Draw box2
