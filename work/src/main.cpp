@@ -119,12 +119,17 @@ void scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
 // Called for every key event on since the last glfwPollEvents
 //
 bool collide() {
+
 float cammaxx = g_cam_x +1;
 float camminx = g_cam_x -1;
 float cammaxy = g_cam_y +1;
 float camminy = g_cam_y -1;
 float cammaxz = g_cam_z +1;
 float camminz = g_cam_z -1;
+
+//float *flat_arrayAx = &sphereminmax[0].x;
+//float *flat_arrayAy = &sphereminmax[0].y;
+//float *flat_arrayAz = &sphereminmax[0].z;
 
 	if(cammaxx > g_engine->geometryMain->sphereminmax[0].x && camminx < g_engine->geometryMain->sphereminmax[1].x){
 

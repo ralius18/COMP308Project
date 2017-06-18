@@ -179,7 +179,12 @@ void GeometryMain::renderGeometry() {
 	glTranslatef(5, 2, 0);
 	glScalef(2, 2, 2);
 	objects[sphere]->renderGeometry();
-	std::vector<cgra::vec3> sphereminmax = objects[sphere]->collision();
+	vec3 C = {0,0,0};
+	vec3 D = {0,0,0};
+	sphereminmax.clear();
+	sphereminmax.push_back(C);
+	sphereminmax.push_back(D);
+	sphereminmax = (objects[sphere]->collision());
 	glPopMatrix();
 
 	//Draw second shpere
@@ -219,7 +224,12 @@ void GeometryMain::renderGeometry() {
 	glRotatef(10, 0, 1, 0);
 	glScalef(0.5, 0.5, 0.5);
 	objects[box]->renderGeometry();
-	std::vector<cgra::vec3> boxminmax = objects[box]->collision();
+	vec3 A = {0,0,0};
+	vec3 B = {0,0,0};
+	boxminmax.clear();
+	boxminmax.push_back(A);
+	boxminmax.push_back(B);
+	boxminmax = (objects[box]->collision());
 	glPopMatrix();
 
 	//Draw box2
