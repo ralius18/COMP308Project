@@ -43,22 +43,24 @@ void GeometryMain::loadObjects() {
 	objects = new Geometry*[3];
 
 	//Args are sting for the file, int for how much the texture spreads on the object
-	objects[0] = new Geometry("../work/res/assets/sphere.obj", 1);
+	objects[0] = new Geometry("../work/res/assets/sphere.obj", 4);
 	objects[1] = new Geometry("../work/res/assets/box.obj", 8);
-	//objects[2] = new Geometry("../work/res/assets/teapot.obj", 1);
+	objects[2] = new Geometry("../work/res/assets/teapot.obj", 1);
+	//objects[3] = new Geometry("../work/res/assets/sphere.obj", 1);
 }
 
 void GeometryMain::loadTextures() {
 
-	texturesSize = 5; //The amount of textures we are loading in
+	texturesSize = 8; //The amount of textures we are loading in
 	textures = new GLuint[texturesSize];
 
 	//Load in images
 	Image texBrick("../work/res/textures/brick.jpg");
 	Image texWood("../work/res/textures/wood.jpg");
-	Image texCloud("../work/res/textures/cloud.jpg");
-	Image texCheckRed("../work/res/textures/red-checks.png");
-	Image texCheckGreen("../work/res/textures/green-checks.png");
+	Image texCloud("../work/res/textures/background.png");
+	Image texMetal1("../work/res/textures/metal-1.jpg");
+	Image texFLight("../work/res/textures/fake-light.jpg");
+	Image texRust1("../work/res/textures/trak_rustdecal2.tga");
 
 	//Generate our textures array.
 	glGenTextures(texturesSize, textures); // Generate texture IDs
@@ -80,17 +82,17 @@ void GeometryMain::loadTextures() {
 	glBindTexture(GL_TEXTURE_2D, textures[wood]);
 	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texWood.w, texWood.h, texWood.glFormat(), GL_UNSIGNED_BYTE, texWood.dataPointer());
 
-	glBindTexture(GL_TEXTURE_2D, textures[cloud]);
+	glBindTexture(GL_TEXTURE_2D, textures[background]);
 	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texCloud.w, texCloud.h, texCloud.glFormat(), GL_UNSIGNED_BYTE, texCloud.dataPointer());
 
-	glBindTexture(GL_TEXTURE_2D, textures[3]);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texCheckRed.w, texCheckRed.h, texCheckRed.glFormat(), GL_UNSIGNED_BYTE, texCheckRed.dataPointer());
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 32, 32, 0, GL_RGBA, GL_UNSIGNED_BYTE, texels0);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, textures[metal1]);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texMetal1.w, texMetal1.h, texMetal1.glFormat(), GL_UNSIGNED_BYTE, texMetal1.dataPointer());
 
-	glBindTexture(GL_TEXTURE_2D, textures[4]);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texCheckGreen.w, texCheckGreen.h, texCheckGreen.glFormat(), GL_UNSIGNED_BYTE, texCheckGreen.dataPointer());
+	glBindTexture(GL_TEXTURE_2D, textures[fake_light]);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texFLight.w, texFLight.h, texFLight.glFormat(), GL_UNSIGNED_BYTE, texFLight.dataPointer());
 
+	glBindTexture(GL_TEXTURE_2D, textures[rust1]);
+	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, texRust1.w, texRust1.h, texRust1.glFormat(), GL_UNSIGNED_BYTE, texRust1.dataPointer());
 
 }
 
@@ -102,6 +104,12 @@ void GeometryMain::renderGeometry() {
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE1);
 		glEnable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE2);
+		glEnable(GL_TEXTURE_2D);
+		glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+		glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+		glEnable(GL_TEXTURE_GEN_S);
+		glEnable(GL_TEXTURE_GEN_T);
 		// Use Texture as the color
 		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	}
@@ -115,18 +123,20 @@ void GeometryMain::renderGeometry() {
 		glColor3f(0.3f, 0.3f, 0.3f);
 	if (textures_enabled) {
 		glActiveTexture(GL_TEXTURE0);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		//Texture for the floor because putting it anywhere else won't work...
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		glBindTexture(GL_TEXTURE_2D, textures[brick]);
 		glActiveTexture(GL_TEXTURE1);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glBindTexture(GL_TEXTURE_2D, textures[cloud]);
+		glBindTexture(GL_TEXTURE_2D, textures[fake_light]);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	float sqXs[4] = { 0, 1, 1, 0 };
 	float sqZs[4] = { 0, 0, 1, 1 };
 	int size = 40; //Length (or width) of the square
 	int textureSpread = 6; //How much the texture repeats itself over the square.
+
 	glPushMatrix();
 	glTranslatef(-size/2, 0, -size/2);
 
@@ -135,73 +145,98 @@ void GeometryMain::renderGeometry() {
 		glNormal3f(sqXs[i] * size, -2, sqZs[i] * size);
 		glMultiTexCoord2f(GL_TEXTURE0, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
 		glMultiTexCoord2f(GL_TEXTURE1, sqXs[i], sqZs[i]);
+		glMultiTexCoord2f(GL_TEXTURE2, sqXs[i], sqZs[i]);
 		glVertex3f(sqXs[i] * size, -2, sqZs[i] * size);
 	}
 	glEnd();
 
 	glPopMatrix();
-	glPushMatrix();
 
 	//Draw sphere
 	if (color_enabled)
-		glColor3f(0.8f, 0.3f, 0.0f); //Metalic Bronze color
+		glColor3f(1.0f, 0.9f, 0.8f); //Metalic Bronze color
 	if (textures_enabled) {
 		glActiveTexture(GL_TEXTURE0);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glBindTexture(GL_TEXTURE_2D, textures[cloud]);
+		glBindTexture(GL_TEXTURE_2D, textures[metal1]);
 		glActiveTexture(GL_TEXTURE1);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, textures[rust1]);
 	}
+	glPushMatrix();
+	glTranslatef(0, 2, 0);
+	glScalef(2, 2, 2);
 	objects[sphere]->renderGeometry();
 	std::vector<cgra::vec3> sphereminmax = objects[sphere]->collision();
+	glPopMatrix();
 
-	//Draw box
-	glPushMatrix();
-	glTranslatef(10, 0, -10);
+	//Draw second shpere
 	if (color_enabled)
-		glColor3f(1.0f, 1.0f, 1.0f); //Dark Red
+		glColor3f(0.8f, 0.8f, 0.8f); //grey/white
 	if (textures_enabled) {
 		glActiveTexture(GL_TEXTURE0);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glBindTexture(GL_TEXTURE_2D, textures[3]);
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glActiveTexture(GL_TEXTURE1);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_SUBTRACT);
+		glBindTexture(GL_TEXTURE_2D, textures[rust1]);
+		glActiveTexture(GL_TEXTURE2);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glBindTexture(GL_TEXTURE_2D, textures[4]);
+		glBindTexture(GL_TEXTURE_2D, textures[background]);
 	}
+	glPushMatrix();
+	glTranslatef(5, 2, 10);
+	glRotatef(160, 0, 1, 0);
+	glScalef(2, 2, 2);
+	objects[sphere]->renderGeometry();
+	//std::vector<cgra::vec3> sphere2minmax = objects[sphere]->collision();
+	glPopMatrix();
+
+	//Draw box
+	if (color_enabled)
+		glColor3f(0.9f, 0.0f, 0.0f); //Plastic Red
+	if (textures_enabled) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glActiveTexture(GL_TEXTURE2);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glBindTexture(GL_TEXTURE_2D, textures[background]);
+	}
+	glPushMatrix();
+	glTranslatef(10, -1, -10);
+	glScalef(0.5, 0.5, 0.5);
 	objects[box]->renderGeometry();
 	std::vector<cgra::vec3> boxminmax = objects[box]->collision();
 	glPopMatrix();
 
 	//Draw teapot
-	glPushMatrix();
-	glTranslatef(4, -2, -6);
-	glRotatef(-50, 0, 1, 0);
 	if (color_enabled)
-		glColor3f(0.6f, 0.6f, 0.6f); //Dark Red
+		glColor3f(0.8f, 0.8f, 0.8f); //White
 	if (textures_enabled) {
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glActiveTexture(GL_TEXTURE1);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glBindTexture(GL_TEXTURE_2D, textures[brick]);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, textures[background]);
 	}
-	//objects[teapot]->renderGeometry();
+	glPushMatrix();
+	glTranslatef(-10, -2, 6);
+	glRotatef(-50, 0, 1, 0);
+	objects[teapot]->renderGeometry();
 	glPopMatrix();
 
 	// Cleanup
-	glPopMatrix();
 	if (textures_enabled) {
 		//clearing all the gl_textures that i've used
-		for (int i = 0; i <= 5; i++) {
+		for (int i = 0; i <= 2; i++) {
 			glActiveTexture(GL_TEXTURE0+i);
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 			glDisable(GL_TEXTURE_2D);
 		}
-		//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glActiveTexture(GL_TEXTURE2);
+		glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, 0);
+		glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, 0);
+		glDisable(GL_TEXTURE_GEN_S);
+		glDisable(GL_TEXTURE_GEN_T);
 		glActiveTexture(GL_TEXTURE0);
-		
 	}
 	glDisable(GL_COLOR_MATERIAL);
 	glColor3f(0, 0, 0);
