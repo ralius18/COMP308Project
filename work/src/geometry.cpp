@@ -320,6 +320,7 @@ std::vector<cgra::vec3> Geometry::collision() {
 	//float min = FLT_MIN; // smallest possible float
 	//float max = FLT_MAX; // biggest...
 
+	minmaxob.clear();
 	for (i = 0; i < m_points.size(); i++) {
 		vec3 A = m_points[i];
 		if(i == 0){
@@ -346,8 +347,8 @@ std::vector<cgra::vec3> Geometry::collision() {
 	vec3 min = {vxmin, vymin, vzmin};
 	vec3 max = {vxmax, vymax, vzmax};
 
-	minmaxob[0] = min;
-	minmaxob[1] = max;
+	minmaxob.push_back(min);
+	minmaxob.push_back(max);
 
 	return minmaxob;
 }
