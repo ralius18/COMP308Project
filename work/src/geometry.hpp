@@ -69,4 +69,5 @@ public:
 
 	void renderGeometry();
 	void toggleWireFrame();
+	void collision();
 };

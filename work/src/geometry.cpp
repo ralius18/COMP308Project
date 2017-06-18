@@ -290,7 +290,7 @@ void Geometry::createDisplayList(){
 		}
 	}
 	glEnd();
-	glEndList();
+	glEndList();	
 }
 
 void Geometry::renderGeometry() {
@@ -305,3 +305,7 @@ void Geometry::toggleWireFrame() {
 	cout << "WARNING: toggleWireFrame() does nothing!!!" << endl;
 	m_wireFrameOn = false;//!m_wireFrameOn;
 }
+
+void Geometry::collision() {
+	
+	}
