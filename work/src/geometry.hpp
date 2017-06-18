@@ -68,8 +68,8 @@ public:
 	Geometry(std::string, int textureSpread);
 	~Geometry();
 
-	std::vector<std::vec3> objects;
+	std::vector<cgra::vec3> minmaxob;
 	void renderGeometry();
 	void toggleWireFrame();
-	void collision();
+	std::vector<cgra::vec3> collision();
 };
