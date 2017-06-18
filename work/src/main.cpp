@@ -127,13 +127,16 @@ float camminy = g_cam_y -1;
 float cammaxz = g_cam_z +1;
 float camminz = g_cam_z -1;
 
+//float *flat_arrayAx = &sphereminmax[0].x;
+//float *flat_arrayAy = &sphereminmax[0].y;
+//float *flat_arrayAz = &sphereminmax[0].z;
 
-	// seems the sphere was working and now it isnt weird
-	if(cammaxx > (g_engine->geometryMain->sphereminmax[0].x + 5) && camminx < (g_engine->geometryMain->sphereminmax[1].x + 5)); {
+
+	if(cammaxx > (g_engine->geometryMain->sphereminmax[0].x + 5) && camminx < (g_engine->geometryMain->sphereminmax[1].x + 5)) {
 
 		if(cammaxy > (g_engine->geometryMain->sphereminmax[0].y + 2) && camminy < (g_engine->geometryMain->sphereminmax[1].y + 2)){
 
-			if(cammaxz > (g_engine->geometryMain->sphereminmax[0].z) && camminz < (g_engine->geometryMain->sphereminmax[1].z)){
+			if(cammaxz > g_engine->geometryMain->sphereminmax[0].z && camminz < g_engine->geometryMain->sphereminmax[1].z){
 				return true;
 
 			}
