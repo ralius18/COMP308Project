@@ -69,8 +69,8 @@ inline CGLUtil *GLUtil()			{ return CGLUtil::m_pMain; }
 
 #define USE_CG
 #ifdef USE_CG
-#include <Cg\cg.h>
-#include <Cg\cgGL.h>
+//#include <Cg\cg.h>
+//#include <Cg\cgGL.h>
 
 class CShaderObject
 {
@@ -176,41 +176,41 @@ public:
 		{
 			if(!cgIsProgramCompiled(m_cgFragmentProgram)) 
 				cgCompileProgram(m_cgFragmentProgram);
-			LogInfo(cgGetProgramString(m_cgFragmentProgram, CG_COMPILED_PROGRAM));
-			cgGLEnableProfile(m_cgFragmentProfile);
-			cgGLLoadProgram(m_cgFragmentProgram);
-			cgGLDisableProfile(m_cgFragmentProfile);
+			//LogInfo(cgGetProgramString(m_cgFragmentProgram, CG_COMPILED_PROGRAM));
+			//cgGLEnableProfile(m_cgFragmentProfile);
+			//cgGLLoadProgram(m_cgFragmentProgram);
+			//cgGLDisableProfile(m_cgFragmentProfile);
 		}
 	}
 
 	void Unload()
 	{
-		if(cgIsProgram(m_cgVertexProgram))
-		{
-			cgDestroyProgram(m_cgVertexProgram);
-			m_cgVertexProgram = NULL;
-		}
-		if(cgIsProgram(m_cgFragmentProgram))
-		{
-			cgDestroyProgram(m_cgFragmentProgram);
-			m_cgFragmentProgram = NULL;
-		}
+		//if(cgIsProgram(m_cgVertexProgram))
+		///{
+			//cgDestroyProgram(m_cgVertexProgram);
+			///m_cgVertexProgram = NULL;
+		//}
+		///if(cgIsProgram(m_cgFragmentProgram))
+		//{
+		//	cgDestroyProgram(m_cgFragmentProgram);
+		//	m_cgFragmentProgram = NULL;
+		//}
 	}
 
 	void Enable()
 	{
-		if(cgIsProgram(m_cgVertexProgram))
+		//if(cgIsProgram(m_cgVertexProgram))
 		{
-			cgGLEnableProfile(m_cgVertexProfile);
-			cgGLBindProgram(m_cgVertexProgram);
-			CGparameter pMatrix = cgGetNamedParameter(m_cgVertexProgram, "gl_ModelViewProjectionMatrix");
-			cgGLSetStateMatrixParameter(pMatrix, CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
-		}
-		if(cgIsProgram(m_cgFragmentProgram))
-		{
-			cgGLEnableProfile(m_cgFragmentProfile);
-			cgGLBindProgram(m_cgFragmentProgram);
-		}
+		//	cgGLEnableProfile(m_cgVertexProfile);
+		//	cgGLBindProgram(m_cgVertexProgram);
+		//	CGparameter pMatrix = cgGetNamedParameter(m_cgVertexProgram, "gl_ModelViewProjectionMatrix");
+		//	cgGLSetStateMatrixParameter(pMatrix, CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
+		///}
+		//if(cgIsProgram(m_cgFragmentProgram))
+		///{
+			//cgGLEnableProfile(m_cgFragmentProfile);
+			//cgGLBindProgram(m_cgFragmentProgram);
+		//}
 	}
 
 	void Disable()

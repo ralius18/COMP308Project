@@ -2,7 +2,6 @@
 
 #include "light.hpp"
 #include "geometryMain.hpp"
-#include "GLUtil.h"
 
 
 class Engine
@@ -48,11 +47,11 @@ public:
 	float m_fRayleighScaleDepth;
 	float m_fMieScaleDepth;
 
-	CPBuffer m_pBuffer;
-	CPixelBuffer m_pbOpticalDepth;
+	//CPBuffer m_pBuffer;
+	//CPixelBuffer m_pbOpticalDepth;
 
-	CShaderObject m_shSkyFromSpace;
-	CShaderObject m_shSkyFromAtmosphere;
+	//CShaderObject m_shSkyFromSpace;
+	//CShaderObject m_shSkyFromAtmosphere;
 	//CShaderObject m_shGroundFromSpace;
 	//CShaderObject m_shGroundFromAtmosphere;
 	//CShaderObject m_shSpaceFromSpace;
