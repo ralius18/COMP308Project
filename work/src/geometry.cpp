@@ -48,6 +48,7 @@ void Geometry::readOBJ(string filename) {
 	m_uvs.clear();
 	m_normals.clear();
 	m_triangles.clear();
+	objects.clear();
 
 	// Load dummy points because OBJ indexing starts at 1 not 0
 	m_points.push_back(vec3(0,0,0));
@@ -149,7 +150,7 @@ void Geometry::readOBJ(string filename) {
 	cout << m_normals.size()-1 << " normals" << endl;
 	cout << m_triangles.size() << " faces" << endl;
 
-
+	collision();
 	// If we didn't have any normals, create them
 	if (m_normals.size() <= 1) createNormals();
 }

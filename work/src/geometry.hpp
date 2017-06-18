@@ -51,6 +51,7 @@ private:
 	std::vector<cgra::vec3> m_normals;	// Normal list
 	std::vector<triangle> m_triangles;	// Triangle/Face list
 
+
 	void readOBJ(std::string);
 
 	void createNormals();
@@ -67,6 +68,7 @@ public:
 	Geometry(std::string, int textureSpread);
 	~Geometry();
 
+	std::vector<std::string> objects;
 	void renderGeometry();
 	void toggleWireFrame();
 	void collision();
