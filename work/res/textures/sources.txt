@@ -1,0 +1,3 @@
+brick.jpg, wood.jpg, normalMap.jpg, cubeMap.jpg from previous assignments
+red-checks.png, green-checks.png by Jarvis Dunn
+metal-1.jpg from https://opengameart.org/node/7540
