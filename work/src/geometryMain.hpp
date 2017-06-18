@@ -36,9 +36,15 @@ private:
 	void loadTextures();
 	enum textureNames { brick, wood, cloud };
 
+	
+
 public:
 	GeometryMain();
 	~GeometryMain();
+
+	std::vector<cgra::vec3> sphereminmax;
+	std::vector<cgra::vec3> boxminmax;
+	std::vector<cgra::vec3> teapotminmax;
 
 	void renderGeometry();
 	void toggleTextures();
