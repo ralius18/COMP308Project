@@ -127,16 +127,13 @@ float camminy = g_cam_y -1;
 float cammaxz = g_cam_z +1;
 float camminz = g_cam_z -1;
 
-//float *flat_arrayAx = &sphereminmax[0].x;
-//float *flat_arrayAy = &sphereminmax[0].y;
-//float *flat_arrayAz = &sphereminmax[0].z;
 
+	// seems the sphere was working and now it isnt weird
+	if(cammaxx > (g_engine->geometryMain->sphereminmax[0].x + 5) && camminx < (g_engine->geometryMain->sphereminmax[1].x + 5)); {
 
-	if(cammaxx > g_engine->geometryMain->sphereminmax[0].x && camminx < g_engine->geometryMain->sphereminmax[1].x){
+		if(cammaxy > (g_engine->geometryMain->sphereminmax[0].y + 2) && camminy < (g_engine->geometryMain->sphereminmax[1].y + 2)){
 
-		if(cammaxy > g_engine->geometryMain->sphereminmax[0].y && camminy < g_engine->geometryMain->sphereminmax[1].y){
-
-			if(cammaxz > g_engine->geometryMain->sphereminmax[0].z && camminz < g_engine->geometryMain->sphereminmax[1].z){
+			if(cammaxz > (g_engine->geometryMain->sphereminmax[0].z) && camminz < (g_engine->geometryMain->sphereminmax[1].z)){
 				return true;
 
 			}
@@ -145,11 +142,11 @@ float camminz = g_cam_z -1;
 
 	}
 
-	if(cammaxx > g_engine->geometryMain->boxminmax[0].x && camminx < g_engine->geometryMain->boxminmax[1].x){
+	if(cammaxx > (g_engine->geometryMain->boxminmax[0].x + 10) && camminx < (g_engine->geometryMain->boxminmax[1].x + 10)){
 
-		if(cammaxy > g_engine->geometryMain->boxminmax[0].y && camminy < g_engine->geometryMain->boxminmax[1].y){
+		if(cammaxy > (g_engine->geometryMain->boxminmax[0].y - 1) && camminy < (g_engine->geometryMain->boxminmax[1].y - 1)){
 
-			if(cammaxz > g_engine->geometryMain->boxminmax[0].z && camminz < g_engine->geometryMain->boxminmax[1].z){
+			if(cammaxz > (g_engine->geometryMain->boxminmax[0].z - 10) && camminz < (g_engine->geometryMain->boxminmax[1].z - 10)){
 				return true;
 
 			}
@@ -158,11 +155,11 @@ float camminz = g_cam_z -1;
 
 	}
 
-	if(cammaxx > g_engine->geometryMain->teapotminmax[0].x && camminx < g_engine->geometryMain->teapotminmax[1].x){
+	if(cammaxx > (g_engine->geometryMain->teapotminmax[0].x -10) && camminx < (g_engine->geometryMain->teapotminmax[1].x -10)){
 
-		if(cammaxy > g_engine->geometryMain->teapotminmax[0].y && camminy < g_engine->geometryMain->teapotminmax[1].y){
+		if(cammaxy > (g_engine->geometryMain->teapotminmax[0].y -2) && camminy < (g_engine->geometryMain->teapotminmax[1].y -2)){
 
-			if(cammaxz > g_engine->geometryMain->teapotminmax[0].z && camminz < g_engine->geometryMain->teapotminmax[1].z){
+			if(cammaxz > (g_engine->geometryMain->teapotminmax[0].z + 6) && camminz < (g_engine->geometryMain->teapotminmax[1].z +6)){
 				return true;
 
 			}
