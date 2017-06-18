@@ -43,7 +43,7 @@ void GeometryMain::loadObjects() {
 	objects = new Geometry*[3];
 
 	//Args are sting for the file, int for how much the texture spreads on the object
-	objects[0] = new Geometry("../work/res/assets/sphere.obj", 4);
+	objects[0] = new Geometry("../work/res/assets/sphere.obj", 1);
 	objects[1] = new Geometry("../work/res/assets/box.obj", 8);
 	//objects[2] = new Geometry("../work/res/assets/teapot.obj", 1);
 }
@@ -123,20 +123,23 @@ void GeometryMain::renderGeometry() {
 		glBindTexture(GL_TEXTURE_2D, textures[cloud]);
 	}
 
-	float sqXs[4] = { -1, 1, 1,-1 };
-	float sqZs[4] = { -1,-1, 1, 1 };
-	int size = 20; //Half the length (or width) of the square
-	int textureSpread = 4; //How much the texture repeats itself over the square.
+	float sqXs[4] = { 0, 1, 1, 0 };
+	float sqZs[4] = { 0, 0, 1, 1 };
+	int size = 40; //Length (or width) of the square
+	int textureSpread = 6; //How much the texture repeats itself over the square.
+	glPushMatrix();
+	glTranslatef(-size/2, 0, -size/2);
 
 	glBegin(GL_QUADS);
 	for (int i = 0; i < 4; i++) {
 		glNormal3f(sqXs[i] * size, -2, sqZs[i] * size);
 		glMultiTexCoord2f(GL_TEXTURE0, sqXs[i]*textureSpread, sqZs[i]*textureSpread);
-		glMultiTexCoord2f(GL_TEXTURE1, sqXs[i] * textureSpread/4, sqZs[i] * textureSpread/4);
+		glMultiTexCoord2f(GL_TEXTURE1, sqXs[i], sqZs[i]);
 		glVertex3f(sqXs[i] * size, -2, sqZs[i] * size);
 	}
 	glEnd();
 
+	glPopMatrix();
 	glPushMatrix();
 
 	//Draw sphere
@@ -145,10 +148,10 @@ void GeometryMain::renderGeometry() {
 	if (textures_enabled) {
 		glActiveTexture(GL_TEXTURE0);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glBindTexture(GL_TEXTURE_2D, textures[4]);
+		glBindTexture(GL_TEXTURE_2D, textures[cloud]);
 		glActiveTexture(GL_TEXTURE1);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glBindTexture(GL_TEXTURE_2D, textures[brick]);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	objects[sphere]->renderGeometry();
 
