@@ -118,6 +118,56 @@ void scrollCallback(GLFWwindow *win, double xoffset, double yoffset) {
 // Keyboard callback
 // Called for every key event on since the last glfwPollEvents
 //
+bool collide() {
+float cammaxx = g_cam_x +1;
+float camminx = g_cam_x -1;
+float cammaxy = g_cam_y +1;
+float camminy = g_cam_y -1;
+float cammaxz = g_cam_z +1;
+float camminz = g_cam_z -1;
+
+	if(cammaxx > g_engine->geometryMain->sphereminmax[0].x && camminx < g_engine->geometryMain->sphereminmax[1].x){
+
+		if(cammaxy > g_engine->geometryMain->sphereminmax[0].y && camminy < g_engine->geometryMain->sphereminmax[1].y){
+
+			if(cammaxz > g_engine->geometryMain->sphereminmax[0].z && camminz < g_engine->geometryMain->sphereminmax[1].z){
+				return true;
+
+			}
+
+		}
+
+	}
+
+	if(cammaxx > g_engine->geometryMain->boxminmax[0].x && camminx < g_engine->geometryMain->boxminmax[1].x){
+
+		if(cammaxy > g_engine->geometryMain->boxminmax[0].y && camminy < g_engine->geometryMain->boxminmax[1].y){
+
+			if(cammaxz > g_engine->geometryMain->boxminmax[0].z && camminz < g_engine->geometryMain->boxminmax[1].z){
+				return true;
+
+			}
+
+		}
+
+	}
+
+	if(cammaxx > g_engine->geometryMain->teapotminmax[0].x && camminx < g_engine->geometryMain->teapotminmax[1].x){
+
+		if(cammaxy > g_engine->geometryMain->teapotminmax[0].y && camminy < g_engine->geometryMain->teapotminmax[1].y){
+
+			if(cammaxz > g_engine->geometryMain->teapotminmax[0].z && camminz < g_engine->geometryMain->teapotminmax[1].z){
+				return true;
+
+			}
+
+		}
+
+	}
+
+	return false;
+}
+
 void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 	// cout << "Key Callback :: key=" << key << "scancode=" << scancode	<< "action=" << action << "mods=" << mods << endl;
 	// YOUR CODE GOES HERE
@@ -126,26 +176,38 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 		float yRotRad = radians(g_yaw);
 		float speed = 0.5;
 		if (key == GLFW_KEY_W) {
+			if(collide() == false){
 			g_cam_x -= sin(yRotRad) * speed;
 			g_cam_z += cos(yRotRad) * speed;
 		}
+		}
 		if (key == GLFW_KEY_S) {
+			if(collide() == false){
 			g_cam_x += sin(yRotRad) * speed;
 			g_cam_z -= cos(yRotRad) * speed;
 		}
+		}
 		if (key == GLFW_KEY_A) {
+			if(collide() == false){
 			g_cam_x += cos(yRotRad) * speed;
 			g_cam_z += sin(yRotRad) * speed;
 		}
+		}
 		if (key == GLFW_KEY_D) {
+			if(collide() == false){
 			g_cam_x -= cos(yRotRad) * speed;
 			g_cam_z -= sin(yRotRad) * speed;
 		}
+		}
 		if (key == GLFW_KEY_SPACE) {
+			if(collide() == false){
 			g_cam_y -= speed;
 		}
+		}
 		if (key == GLFW_KEY_LEFT_CONTROL) {
+			if(collide() == false){
 			g_cam_y += speed;
+		}
 		}
 	}
 	if(action == GLFW_RELEASE) {
@@ -486,3 +548,6 @@ void APIENTRY debugCallbackARB(GLenum source, GLenum type, GLuint id, GLenum sev
 
 	if (type == GL_DEBUG_TYPE_ERROR_ARB) throw runtime_error("");
 }
+
+
+
