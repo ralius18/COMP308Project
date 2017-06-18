@@ -48,7 +48,7 @@ void Geometry::readOBJ(string filename) {
 	m_uvs.clear();
 	m_normals.clear();
 	m_triangles.clear();
-	objects.clear();
+	
 
 	// Load dummy points because OBJ indexing starts at 1 not 0
 	m_points.push_back(vec3(0,0,0));
@@ -150,7 +150,7 @@ void Geometry::readOBJ(string filename) {
 	cout << m_normals.size()-1 << " normals" << endl;
 	cout << m_triangles.size() << " faces" << endl;
 
-	collision();
+	
 	// If we didn't have any normals, create them
 	if (m_normals.size() <= 1) createNormals();
 }
@@ -307,7 +307,7 @@ void Geometry::toggleWireFrame() {
 	m_wireFrameOn = false;//!m_wireFrameOn;
 }
 
-void Geometry::collision() {
+std::vector<cgra::vec3> Geometry::collision() {
 
 	int i;
 	float vxmax;
@@ -317,8 +317,8 @@ void Geometry::collision() {
 	float vymin;
 	float vzmin;
 
-	float min = FLT_MIN; // smallest possible float
-	float max = FLT_MAX; // biggest...
+	//float min = FLT_MIN; // smallest possible float
+	//float max = FLT_MAX; // biggest...
 
 	for (i = 0; i < m_points.size(); i++) {
 		vec3 A = m_points[i];
@@ -343,9 +343,11 @@ void Geometry::collision() {
 
 
 	}
-	Vec3 min = {vxmin, vymin, vzmin};
-	Vec3 max = {vxmax, vymax, vzmax};
+	vec3 min = {vxmin, vymin, vzmin};
+	vec3 max = {vxmax, vymax, vzmax};
 
-	objects[0] = min;
-	objects[1] = max;
+	minmaxob[0] = min;
+	minmaxob[1] = max;
+
+	return minmaxob;
 }

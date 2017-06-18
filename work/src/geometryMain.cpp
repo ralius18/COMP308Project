@@ -154,6 +154,7 @@ void GeometryMain::renderGeometry() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	objects[sphere]->renderGeometry();
+	std::vector<cgra::vec3> sphereminmax = objects[sphere]->collision();
 
 	//Draw box
 	glPushMatrix();
@@ -169,6 +170,7 @@ void GeometryMain::renderGeometry() {
 		glBindTexture(GL_TEXTURE_2D, textures[4]);
 	}
 	objects[box]->renderGeometry();
+	std::vector<cgra::vec3> boxminmax = objects[box]->collision();
 	glPopMatrix();
 
 	//Draw teapot
