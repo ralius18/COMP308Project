@@ -186,34 +186,60 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 			g_cam_x -= sin(yRotRad) * speed;
 			g_cam_z += cos(yRotRad) * speed;
 		}
+			else{
+			g_cam_x += 1;
+			g_cam_z -= 1;
+			}
 		}
 		if (key == GLFW_KEY_S) {
 			if(collide() == false){
 			g_cam_x += sin(yRotRad) * speed;
 			g_cam_z -= cos(yRotRad) * speed;
 		}
+			else{
+			g_cam_x -= 1;
+			g_cam_z += 1;
+
+			}
 		}
 		if (key == GLFW_KEY_A) {
 			if(collide() == false){
 			g_cam_x += cos(yRotRad) * speed;
 			g_cam_z += sin(yRotRad) * speed;
 		}
+			else{
+				g_cam_x -= 1;
+				g_cam_z -= 1;
+
+			}
 		}
 		if (key == GLFW_KEY_D) {
 			if(collide() == false){
 			g_cam_x -= cos(yRotRad) * speed;
 			g_cam_z -= sin(yRotRad) * speed;
 		}
+			else{
+				g_cam_x += 1;
+				g_cam_z += 1;
+
+			}
 		}
 		if (key == GLFW_KEY_SPACE) {
 			if(collide() == false){
 			g_cam_y -= speed;
 		}
+			else{
+				g_cam_y += 1;
+			}
 		}
 		if (key == GLFW_KEY_LEFT_CONTROL) {
 			if(collide() == false){
 			g_cam_y += speed;
 		}
+			else{
+				g_cam_y -= 1;
+
+			}
 		}
 	}
 	if(action == GLFW_RELEASE) {
