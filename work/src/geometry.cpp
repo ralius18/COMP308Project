@@ -307,7 +307,35 @@ void Geometry::toggleWireFrame() {
 }
 
 void Geometry::collision() {
-	
-	
-	
+
+	int i;
+	float vxmax;
+	float vymax;
+	float vzmax;
+	float vxmin;
+	float vymin;
+	float vzmin;
+	for (i = 0; i < m_points.size(); i++) {
+		vec3 A = m_points[i];
+		if(i == 0){
+			vxmin = A.x;
+			vymin = A.y;
+			vzmin = A.z;
+			vxmax = A.x;
+			vxmax = A.y;
+			vxmax = A.z;
+		}
+		else{
+			if(A.x < vxmin){vxmin = A.x;}
+			if(A.x > vxmax){vxmax = A.x;}
+			if(A.y < vymin){vymin = A.y;}
+			if(A.y > vymax){vymax = A.y;}
+			if(A.z < vzmin){vzmin = A.z;}
+			if(A.z > vzmax){vzmax = A.z;}
+
+
+		}
+
+
 	}
+}
