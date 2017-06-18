@@ -1,3 +1,11 @@
 brick.jpg, wood.jpg, normalMap.jpg, cubeMap.jpg from previous assignments
-red-checks.png, green-checks.png by Jarvis Dunn
+
+red-checks.png, green-checks.png, mark1, fake-light.jpg, fake-light2.jpg, background.png by Jarvis Dunn
+
+coud.jpg http://pre12.deviantart.net/8501/th/pre/i/2012/183/c/3/blue_sky_and_clouds_stock_by_phaedris-d55pmi5.jpg
+
 metal-1.jpg from https://opengameart.org/node/7540
+
+trak_rustdecal1.tga from https://opengameart.org/content/filth-texture-set-trakrustdecal1tga
+
+trak_rustdecal2.tga and trak_rustdecal3.tga are edits by Jarvis.
