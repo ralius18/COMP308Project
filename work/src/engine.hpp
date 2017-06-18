@@ -46,6 +46,8 @@ public:
 	float m_fWavelength4[3];
 	float m_fRayleighScaleDepth;
 	float m_fMieScaleDepth;
+
+	//CPBuffer m_pBuffer;
 	//CPixelBuffer m_pbOpticalDepth;
 
 	//CShaderObject m_shSkyFromSpace;
@@ -69,5 +71,6 @@ private:
 	void createScreenCopyTexture();
 	GLuint screenCopyTextureId;
 	void copyFrameBufferToTexture();
+	void scatteringRender(float cam_x, float cam_y, float cam_z);
 
 };

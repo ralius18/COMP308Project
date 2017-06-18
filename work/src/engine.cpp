@@ -9,6 +9,7 @@
 #include "math.h"
 #include "geometry.hpp"
 #include "simple_shader.hpp"
+//#include "GLUtil.h"
 
 using namespace std;
 using namespace cgra;
@@ -20,7 +21,7 @@ Engine* Engine::engine;
 #define renderHeight 480
 #define OFF_SCREEN_RENDER_RATIO 1
 
-#define PI 3.14
+//#define PI 3.14
 
 Engine::Engine(GLFWwindow* window)
 {
@@ -32,6 +33,9 @@ Engine::Engine(GLFWwindow* window)
 	glAlphaFunc(GL_GREATER, 0.5f);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
+
+	//m_pBuffer.Init(1024, 1024, 0);
+	//m_pBuffer.MakeCurrent();
 
 	//GLfloat fogColor[4] = { 0.2f ,0.2f ,0.28f ,1.0f };
 	//Set fog 
@@ -81,6 +85,15 @@ Engine::Engine(GLFWwindow* window)
 	m_fRayleighScaleDepth = 0.25f;
 	m_fMieScaleDepth = 0.1f;
 
+	//m_pbOpticalDepth.MakeOpticalDepthBuffer(m_fInnerRadius, m_fOuterRadius, m_fRayleighScaleDepth, m_fMieScaleDepth);
+
+	//m_shSkyFromSpace.Load("SkyFromSpace");
+	//m_shSkyFromAtmosphere.Load("SkyFromAtmosphere");
+
+	//CPixelBuffer pb;
+	//pb.Init(256, 256, 1);
+	//pb.MakeGlow2D(40.0f, 0.1f);
+
 	shaderSupported = true;
 	if (shaderSupported) {
 		//TODO: this stuff
@@ -114,7 +127,7 @@ Engine::Engine(GLFWwindow* window)
 		cout << "Weight: " << localWeight << endl;
 		cout << "Texture: " << localTexture << endl;
 		*/
-		GLuint atmosshader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/GroundFromAtmosphere.vert", "../work/res/shaders/GroundFromAtmosphere.frag" });
+		//GLuint atmosshader = makeShaderProgramFromFile({ GL_VERTEX_SHADER, GL_FRAGMENT_SHADER }, { "../work/res/shaders/GroundFromAtmosphere.vert", "../work/res/shaders/GroundFromAtmosphere.frag" });
 
 		glUseProgram(0);
 	}
@@ -122,7 +135,7 @@ Engine::Engine(GLFWwindow* window)
 }
 
 void Engine::run()
-{
+	{
 	
 }
 
@@ -135,10 +148,12 @@ void Engine::render()
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	glColor4f(1, 1, 1, 1);//here is the background colour, which I need to replace
+	//glColor4f(1, 1, 1, 1);//here is the background colour, which I need to replace
+
 
 	glViewport(0, 0, renderWidth / OFF_SCREEN_RENDER_RATIO, renderHeight / OFF_SCREEN_RENDER_RATIO);
 
+	
 	//STEP 1 ------------------------
 	//Draw objects black with white light
 	glDisable(GL_TEXTURE_2D);
@@ -274,3 +289,6 @@ void Engine::copyFrameBufferToTexture()
 	glBindTexture(GL_TEXTURE_2D, screenCopyTextureId);
 	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, renderWidth, renderHeight);
 }
+
+
+
