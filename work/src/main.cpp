@@ -131,6 +131,7 @@ float camminz = g_cam_z -1;
 //float *flat_arrayAy = &sphereminmax[0].y;
 //float *flat_arrayAz = &sphereminmax[0].z;
 
+
 	if(cammaxx > g_engine->geometryMain->sphereminmax[0].x && camminx < g_engine->geometryMain->sphereminmax[1].x){
 
 		if(cammaxy > g_engine->geometryMain->sphereminmax[0].y && camminy < g_engine->geometryMain->sphereminmax[1].y){

@@ -322,7 +322,7 @@ std::vector<cgra::vec3> Geometry::collision() {
 	//float max = FLT_MAX; // biggest...
 
 	minmaxob.clear();
-	for (i = 0; i < m_points.size(); i++) {
+	for (i = 0; i <	 m_points.size(); i++) {
 		vec3 A = m_points[i];
 		if(i == 0){
 			vxmin = A.x;

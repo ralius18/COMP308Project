@@ -185,6 +185,7 @@ void GeometryMain::renderGeometry() {
 	sphereminmax.push_back(C);
 	sphereminmax.push_back(D);
 	sphereminmax = (objects[sphere]->collision());
+
 	glPopMatrix();
 
 	//Draw second shpere
@@ -269,6 +270,12 @@ void GeometryMain::renderGeometry() {
 	glTranslatef(-10, -2, 6);
 	glRotatef(-50, 0, 1, 0);
 	objects[teapot]->renderGeometry();
+	vec3 E = {0,0,0};
+	vec3 F = {0,0,0};
+	sphereminmax.clear();
+	sphereminmax.push_back(E);
+	sphereminmax.push_back(F);
+	teapotminmax = objects[teapot]->collision();
 	glPopMatrix();
 
 	// Cleanup
