@@ -29,6 +29,8 @@
 using namespace std;
 using namespace cgra;
 
+//Fixed Dan Fuck Up
+
 GeometryMain::GeometryMain() {
 	//Loading will be mostly hard coded!!! Check methods for alteration.
 	loadObjects();
