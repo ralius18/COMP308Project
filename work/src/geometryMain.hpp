@@ -34,7 +34,7 @@ private:
 
 	void loadObjects();
 	void loadTextures();
-	enum textureNames { brick, wood, background, metal1, fake_light, rust1 };
+	enum textureNames { brick, wood, background, metal1, fake_light, rust1, fake_light2, mark, rust2 };
 
 public:
 	GeometryMain();
