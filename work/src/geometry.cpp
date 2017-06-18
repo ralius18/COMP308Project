@@ -316,6 +316,10 @@ void Geometry::collision() {
 	float vxmin;
 	float vymin;
 	float vzmin;
+
+	float min = FLT_MIN; // smallest possible float
+	float max = FLT_MAX; // biggest...
+
 	for (i = 0; i < m_points.size(); i++) {
 		vec3 A = m_points[i];
 		if(i == 0){
