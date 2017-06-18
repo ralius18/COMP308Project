@@ -68,7 +68,7 @@ public:
 	Geometry(std::string, int textureSpread);
 	~Geometry();
 
-	std::vector<std::string> objects;
+	std::vector<std::vec3> objects;
 	void renderGeometry();
 	void toggleWireFrame();
 	void collision();

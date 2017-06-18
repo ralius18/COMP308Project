@@ -323,8 +323,8 @@ void Geometry::collision() {
 			vymin = A.y;
 			vzmin = A.z;
 			vxmax = A.x;
-			vxmax = A.y;
-			vxmax = A.z;
+			vymax = A.y;
+			vzmax = A.z;
 		}
 		else{
 			if(A.x < vxmin){vxmin = A.x;}
@@ -339,4 +339,9 @@ void Geometry::collision() {
 
 
 	}
+	Vec3 min = {vxmin, vymin, vzmin};
+	Vec3 max = {vxmax, vymax, vzmax};
+
+	objects[0] = min;
+	objects[1] = max;
 }
