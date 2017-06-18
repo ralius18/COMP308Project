@@ -308,4 +308,6 @@ void Geometry::toggleWireFrame() {
 
 void Geometry::collision() {
 	
+	
+	
 	}
