@@ -171,6 +171,47 @@ float camminz = g_cam_z -1;
 
 	}
 
+	if(cammaxx > (g_engine->geometryMain->sphere2minmax[0].x + 5) && camminx < (g_engine->geometryMain->sphere2minmax[1].x + 5)) {
+
+		if(cammaxy > (g_engine->geometryMain->sphere2minmax[0].y + 2) && camminy < (g_engine->geometryMain->sphere2minmax[1].y + 2)){
+
+			if(cammaxz > (g_engine->geometryMain->sphere2minmax[0].z + 10) && camminz < (g_engine->geometryMain->sphere2minmax[1].z + 10) ){
+				return true;
+
+			}
+
+		}
+
+	}
+
+
+	if(cammaxx > (g_engine->geometryMain->box2minmax[0].x + 6) && camminx < (g_engine->geometryMain->box2minmax[1].x + 6)){
+
+		if(cammaxy > (g_engine->geometryMain->box2minmax[0].y - 1) && camminy < (g_engine->geometryMain->box2minmax[1].y - 1)){
+
+			if(cammaxz > (g_engine->geometryMain->box2minmax[0].z - 11) && camminz < (g_engine->geometryMain->box2minmax[1].z - 11)){
+				return true;
+
+			}
+
+		}
+
+	}
+
+
+	if(cammaxx > (g_engine->geometryMain->box3minmax[0].x + 9) && camminx < (g_engine->geometryMain->box3minmax[1].x + 9)){
+
+		if(cammaxy > (g_engine->geometryMain->box3minmax[0].y - 1) && camminy < (g_engine->geometryMain->box3minmax[1].y - 1)){
+
+			if(cammaxz > (g_engine->geometryMain->box3minmax[0].z - 14) && camminz < (g_engine->geometryMain->box3minmax[1].z - 14)){
+				return true;
+
+			}
+
+		}
+
+	}
+
 	return false;
 }
 

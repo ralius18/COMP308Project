@@ -45,6 +45,9 @@ public:
 	std::vector<cgra::vec3> sphereminmax;
 	std::vector<cgra::vec3> boxminmax;
 	std::vector<cgra::vec3> teapotminmax;
+	std::vector<cgra::vec3> sphere2minmax;
+	std::vector<cgra::vec3> box2minmax;
+	std::vector<cgra::vec3> box3minmax;
 
 	void renderGeometry();
 	void toggleTextures();

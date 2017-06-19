@@ -205,7 +205,12 @@ void GeometryMain::renderGeometry() {
 	glRotatef(160, 0, 1, 0);
 	glScalef(2, 2, 2);
 	objects[sphere]->renderGeometry();
-	//std::vector<cgra::vec3> sphere2minmax = objects[sphere]->collision();
+	vec3 T = {0,0,0};
+	vec3 M = {0,0,0};
+	sphereminmax.clear();
+	sphereminmax.push_back(T);
+	sphereminmax.push_back(M);
+	sphere2minmax = objects[sphere]->collision();
 	glPopMatrix();
 
 	//Draw box
@@ -241,7 +246,12 @@ void GeometryMain::renderGeometry() {
 	glRotatef(40, 0, 1, 0);
 	glScalef(0.5, 0.5, 0.5);
 	objects[box]->renderGeometry();
-	//std::vector<cgra::vec3> boxminmax = objects[box]->collision();
+	vec3 G = {0,0,0};
+	vec3 H = {0,0,0};
+	box2minmax.clear();
+	box2minmax.push_back(G);
+	box2minmax.push_back(H);
+	box2minmax = objects[box]->collision();
 	glPopMatrix();
 
 	//Draw box3
@@ -252,7 +262,12 @@ void GeometryMain::renderGeometry() {
 	glRotatef(-60, 0, 1, 0);
 	glScalef(0.5, 0.5, 0.5);
 	objects[box]->renderGeometry();
-	//std::vector<cgra::vec3> boxminmax = objects[box]->collision();
+	vec3 Q = {0,0,0};
+	vec3 R = {0,0,0};
+	box3minmax.clear();
+	box3minmax.push_back(Q);
+	box3minmax.push_back(R);
+	box3minmax = objects[box]->collision();
 	glPopMatrix();
 
 	//Draw teapot
