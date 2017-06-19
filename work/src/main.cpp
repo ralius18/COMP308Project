@@ -228,8 +228,8 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 			g_cam_z += cos(yRotRad) * speed;
 		}
 			else{
-			g_cam_x += 1;
-			g_cam_z -= 1;
+			g_cam_x += 0.5;
+			g_cam_z -= 0.5;
 			}
 		}
 		if (key == GLFW_KEY_S) {
@@ -238,8 +238,8 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 			g_cam_z -= cos(yRotRad) * speed;
 		}
 			else{
-			g_cam_x -= 1;
-			g_cam_z += 1;
+			g_cam_x -= 0.5;
+			g_cam_z += 0.5;
 
 			}
 		}
@@ -249,8 +249,8 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 			g_cam_z += sin(yRotRad) * speed;
 		}
 			else{
-				g_cam_x -= 1;
-				g_cam_z -= 1;
+				g_cam_x -= 0.5;
+				g_cam_z -= 0.5;
 
 			}
 		}
@@ -260,8 +260,8 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 			g_cam_z -= sin(yRotRad) * speed;
 		}
 			else{
-				g_cam_x += 1;
-				g_cam_z += 1;
+				g_cam_x += 0.5;
+				g_cam_z += 0.5;
 
 			}
 		}
@@ -270,7 +270,7 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 			g_cam_y -= speed;
 		}
 			else{
-				g_cam_y += 1;
+				g_cam_y += 0.5;
 			}
 		}
 		if (key == GLFW_KEY_LEFT_CONTROL) {
@@ -278,7 +278,7 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 			g_cam_y += speed;
 		}
 			else{
-				g_cam_y -= 1;
+				g_cam_y -= 0.5;
 
 			}
 		}
