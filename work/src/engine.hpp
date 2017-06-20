@@ -20,6 +20,8 @@ public:
 
 	Light* light;
 
+	int stage = 3;
+
 	//offscreen rendering
 	bool shaderSupported;
 	GLuint shader;

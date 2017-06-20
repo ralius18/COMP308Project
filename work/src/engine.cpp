@@ -153,95 +153,101 @@ void Engine::render()
 
 	glViewport(0, 0, renderWidth / OFF_SCREEN_RENDER_RATIO, renderHeight / OFF_SCREEN_RENDER_RATIO);
 
-	
-	//STEP 1 ------------------------
-	//Draw objects black with white light
-	glDisable(GL_TEXTURE_2D);
-	glPushMatrix();
-		glEnable(GL_COLOR_MATERIAL);
-			glTranslatef(light->lightPos[0], light->lightPos[1], light->lightPos[2]);
-			light->render();
-		glDisable(GL_COLOR_MATERIAL);
-	glPopMatrix();
+	if (stage >= 1){
+		//STEP 1 ------------------------
+		//Draw objects black with white light
+		glDisable(GL_TEXTURE_2D);
+		glPushMatrix();
+			glEnable(GL_COLOR_MATERIAL);
+				glTranslatef(light->lightPos[0], light->lightPos[1], light->lightPos[2]);
+				light->render();
+			glDisable(GL_COLOR_MATERIAL);
+		glPopMatrix();
 
-	getLightScreenCoord();
+		getLightScreenCoord();
 	
-	//glUseProgram(0);
+		//glUseProgram(0);
 	
-	glEnable(GL_TEXTURE_2D);
-	//glColor4f(0, 0, 0, 1); no need for this when using geometry main.
-	glPushMatrix();
-		//No textures + all black
-		geometryMain->setTexturesOn(false);
-		geometryMain->setColorOn(false);
-		geometryMain->renderGeometry();
-	glPopMatrix();
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glColor4f(0, 0, 0, 1);// no need for this when using geometry main.
+		glPushMatrix();
+			//No textures + all black
+			geometryMain->setTexturesOn(false);
+			geometryMain->setColorOn(false);
+			geometryMain->renderGeometry();
+		glPopMatrix();
 
-	copyFrameBufferToTexture();
+		copyFrameBufferToTexture();
 	
-	glViewport(0, 0, renderWidth, renderHeight);
-	//glEnable(GL_TEXTURE_2D); // no need for this...
+		glViewport(0, 0, renderWidth, renderHeight);
+		//glEnable(GL_TEXTURE_2D); // no need for this...
 	
+		if (stage >= 2){
+			//STEP 2 ------------------------
+			//Draw scene with no light scattering
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glColor4f(1, 1, 1, 1); //maybe?
+			glPushMatrix();
+				geometryMain->setColorOn(true);
+				geometryMain->setTexturesOn(true); //true
+				geometryMain->renderGeometry();
+				//geometryMain->setTexturesOn(false); //false, no need for this i think (99% sure)
+			glPopMatrix();
 	
-	//STEP 2 ------------------------
-	//Draw scene with no light scattering
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glColor4f(1, 1, 1, 1); //maybe?
-	glPushMatrix();
-		geometryMain->setColorOn(true);
-		geometryMain->setTexturesOn(true); //true
-		geometryMain->renderGeometry();
-		//geometryMain->setTexturesOn(false); //false, no need for this i think (99% sure)
-	glPopMatrix();
-	
-	
-	//STEP 3 ------------------------
-	//Paint light scattering effect
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(-renderWidth / 2, renderWidth / 2, -renderHeight / 2, renderHeight / 2, 0, 50000.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glClear(GL_DEPTH_BUFFER_BIT);
+			if (stage >= 3){
+				//STEP 3 ------------------------
+				//Paint light scattering effect
+				if (stage >= 4) {
+					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				}
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
+				glOrtho(-renderWidth / 2, renderWidth / 2, -renderHeight / 2, renderHeight / 2, 0, 50000.0);
+				glMatrixMode(GL_MODELVIEW);
+				glLoadIdentity();
+				glClear(GL_DEPTH_BUFFER_BIT);
 
-	glActiveTexture(GL_TEXTURE_2D);	// GL_TEXTURE9 ????? Welp, ok lol
-	glBindTexture(GL_TEXTURE_2D, screenCopyTextureId);
+				glActiveTexture(GL_TEXTURE_2D);	// GL_TEXTURE9 ????? Welp, ok lol
+				glBindTexture(GL_TEXTURE_2D, screenCopyTextureId);
 
-	//update values
-	glUseProgram(shader);
-	glUniform2f(localLight, uniformLightX, uniformLightY); //mostly just this one
-	glUniform1f(localExposure, uniformExposure);
-	glUniform1f(localDecay, uniformDecay);
-	glUniform1f(localDensity, uniformDensity);
-	glUniform1f(localWeight, uniformWeight);
-	glUniform1i(localTexture, 0);
+				//update values
+				glUseProgram(shader);
+				glUniform2f(localLight, uniformLightX, uniformLightY); //mostly just this one
+				glUniform1f(localExposure, uniformExposure);
+				glUniform1f(localDecay, uniformDecay);
+				glUniform1f(localDensity, uniformDensity);
+				glUniform1f(localWeight, uniformWeight);
+				glUniform1i(localTexture, 0);
 
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+				glEnable(GL_TEXTURE_2D);
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	
-	glBegin(GL_QUADS);
-		glTexCoord2f(0, 0);
-		glVertex2f(-renderWidth / 2, -renderHeight / 2);
+				glBegin(GL_QUADS);
+					glTexCoord2f(0, 0);
+					glVertex2f(-renderWidth / 2, -renderHeight / 2);
 
-		glTexCoord2f(1, 0);
-		glVertex2f(renderWidth / 2, -renderHeight / 2);
+					glTexCoord2f(1, 0);
+					glVertex2f(renderWidth / 2, -renderHeight / 2);
 		
-		glTexCoord2f(1, 1);
-		glVertex2f(renderWidth / 2, renderHeight / 2);
+					glTexCoord2f(1, 1);
+					glVertex2f(renderWidth / 2, renderHeight / 2);
 
-		glTexCoord2f(0, 1);
-		glVertex2f(-renderWidth / 2, renderHeight / 2);
-	glEnd();
+					glTexCoord2f(0, 1);
+					glVertex2f(-renderWidth / 2, renderHeight / 2);
+				glEnd();
 	
-	glUseProgram(0);
+				glUseProgram(0);
 	
 
-	//glDisable(GL_BLEND);
-	//glDisable(GL_TEXTURE9);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_LIGHTING);
-	
+				//glDisable(GL_BLEND);
+				//glDisable(GL_TEXTURE9);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				glDisable(GL_LIGHTING);
+			}
+		}
+	}
 }
 
 void Engine::getLightScreenCoord() 

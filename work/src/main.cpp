@@ -225,6 +225,18 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 			//g_engine->geometryMain->toggleTextures();
 			//Does nothing because g_engine set's it to true anyway.
 		}
+		if (key == GLFW_KEY_1) {
+			g_engine->stage = 1;
+		}
+		if (key == GLFW_KEY_2) {
+			g_engine->stage = 2;
+		}
+		if (key == GLFW_KEY_3) {
+			g_engine->stage = 3;
+		}
+		if (key == GLFW_KEY_4) {
+			g_engine->stage = 4;
+		}
 	}
 }
 
