@@ -132,9 +132,9 @@ float camminz = g_cam_z -1;
 //float *flat_arrayAz = &sphereminmax[0].z;
 
 
-	if(cammaxx > g_engine->geometryMain->sphereminmax[0].x && camminx < g_engine->geometryMain->sphereminmax[1].x){
+	if(cammaxx > (g_engine->geometryMain->sphereminmax[0].x + 5) && camminx < (g_engine->geometryMain->sphereminmax[1].x + 5)) {
 
-		if(cammaxy > g_engine->geometryMain->sphereminmax[0].y && camminy < g_engine->geometryMain->sphereminmax[1].y){
+		if(cammaxy > (g_engine->geometryMain->sphereminmax[0].y + 2) && camminy < (g_engine->geometryMain->sphereminmax[1].y + 2)){
 
 			if(cammaxz > g_engine->geometryMain->sphereminmax[0].z && camminz < g_engine->geometryMain->sphereminmax[1].z){
 				return true;
@@ -145,11 +145,11 @@ float camminz = g_cam_z -1;
 
 	}
 
-	if(cammaxx > g_engine->geometryMain->boxminmax[0].x && camminx < g_engine->geometryMain->boxminmax[1].x){
+	if(cammaxx > (g_engine->geometryMain->boxminmax[0].x + 10) && camminx < (g_engine->geometryMain->boxminmax[1].x + 10)){
 
-		if(cammaxy > g_engine->geometryMain->boxminmax[0].y && camminy < g_engine->geometryMain->boxminmax[1].y){
+		if(cammaxy > (g_engine->geometryMain->boxminmax[0].y - 1) && camminy < (g_engine->geometryMain->boxminmax[1].y - 1)){
 
-			if(cammaxz > g_engine->geometryMain->boxminmax[0].z && camminz < g_engine->geometryMain->boxminmax[1].z){
+			if(cammaxz > (g_engine->geometryMain->boxminmax[0].z - 10) && camminz < (g_engine->geometryMain->boxminmax[1].z - 10)){
 				return true;
 
 			}
@@ -158,11 +158,52 @@ float camminz = g_cam_z -1;
 
 	}
 
-	if(cammaxx > g_engine->geometryMain->teapotminmax[0].x && camminx < g_engine->geometryMain->teapotminmax[1].x){
+	if(cammaxx > (g_engine->geometryMain->teapotminmax[0].x -10) && camminx < (g_engine->geometryMain->teapotminmax[1].x -10)){
 
-		if(cammaxy > g_engine->geometryMain->teapotminmax[0].y && camminy < g_engine->geometryMain->teapotminmax[1].y){
+		if(cammaxy > (g_engine->geometryMain->teapotminmax[0].y -2) && camminy < (g_engine->geometryMain->teapotminmax[1].y -2)){
 
-			if(cammaxz > g_engine->geometryMain->teapotminmax[0].z && camminz < g_engine->geometryMain->teapotminmax[1].z){
+			if(cammaxz > (g_engine->geometryMain->teapotminmax[0].z + 6) && camminz < (g_engine->geometryMain->teapotminmax[1].z +6)){
+				return true;
+
+			}
+
+		}
+
+	}
+
+	if(cammaxx > (g_engine->geometryMain->sphere2minmax[0].x + 5) && camminx < (g_engine->geometryMain->sphere2minmax[1].x + 5)) {
+
+		if(cammaxy > (g_engine->geometryMain->sphere2minmax[0].y + 2) && camminy < (g_engine->geometryMain->sphere2minmax[1].y + 2)){
+
+			if(cammaxz > (g_engine->geometryMain->sphere2minmax[0].z + 10) && camminz < (g_engine->geometryMain->sphere2minmax[1].z + 10) ){
+				return true;
+
+			}
+
+		}
+
+	}
+
+
+	if(cammaxx > (g_engine->geometryMain->box2minmax[0].x + 6) && camminx < (g_engine->geometryMain->box2minmax[1].x + 6)){
+
+		if(cammaxy > (g_engine->geometryMain->box2minmax[0].y - 1) && camminy < (g_engine->geometryMain->box2minmax[1].y - 1)){
+
+			if(cammaxz > (g_engine->geometryMain->box2minmax[0].z - 11) && camminz < (g_engine->geometryMain->box2minmax[1].z - 11)){
+				return true;
+
+			}
+
+		}
+
+	}
+
+
+	if(cammaxx > (g_engine->geometryMain->box3minmax[0].x + 9) && camminx < (g_engine->geometryMain->box3minmax[1].x + 9)){
+
+		if(cammaxy > (g_engine->geometryMain->box3minmax[0].y - 1) && camminy < (g_engine->geometryMain->box3minmax[1].y - 1)){
+
+			if(cammaxz > (g_engine->geometryMain->box3minmax[0].z - 14) && camminz < (g_engine->geometryMain->box3minmax[1].z - 14)){
 				return true;
 
 			}
@@ -186,34 +227,60 @@ void keyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
 			g_cam_x -= sin(yRotRad) * speed;
 			g_cam_z += cos(yRotRad) * speed;
 		}
+			else{
+			g_cam_x += 0.5;
+			g_cam_z -= 0.5;
+			}
 		}
 		if (key == GLFW_KEY_S) {
 			if(collide() == false){
 			g_cam_x += sin(yRotRad) * speed;
 			g_cam_z -= cos(yRotRad) * speed;
 		}
+			else{
+			g_cam_x -= 0.5;
+			g_cam_z += 0.5;
+
+			}
 		}
 		if (key == GLFW_KEY_A) {
 			if(collide() == false){
 			g_cam_x += cos(yRotRad) * speed;
 			g_cam_z += sin(yRotRad) * speed;
 		}
+			else{
+				g_cam_x -= 0.5;
+				g_cam_z -= 0.5;
+
+			}
 		}
 		if (key == GLFW_KEY_D) {
 			if(collide() == false){
 			g_cam_x -= cos(yRotRad) * speed;
 			g_cam_z -= sin(yRotRad) * speed;
 		}
+			else{
+				g_cam_x += 0.5;
+				g_cam_z += 0.5;
+
+			}
 		}
 		if (key == GLFW_KEY_SPACE) {
 			if(collide() == false){
 			g_cam_y -= speed;
 		}
+			else{
+				g_cam_y += 0.5;
+			}
 		}
 		if (key == GLFW_KEY_LEFT_CONTROL) {
 			if(collide() == false){
 			g_cam_y += speed;
 		}
+			else{
+				g_cam_y -= 0.5;
+
+			}
 		}
 	}
 	if(action == GLFW_RELEASE) {
